@@ -30,6 +30,14 @@ body {
     }
 }
 
+.formtext {
+    margin-left: '10px';
+    margin-top: '20px';
+    margin-bottom: '0';
+    font-style: normal;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 .container {
     background-color: rgb(255, 255, 255, 0.9);
     border-radius: 12px;
@@ -40,11 +48,15 @@ body {
     min-width: min-content;
     display: inline-block;
     text-align: left;
+    font-style: normal;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .container > * {
     margin: 20px;
     text-align: left;
+    font-style: normal;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 h2 {
@@ -52,6 +64,8 @@ h2 {
     padding-top: 10px;
     padding-bottom: 10px;
     font-size: 40px;
+    font-style: normal;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 h1, h3, h4 {
@@ -59,14 +73,20 @@ h1, h3, h4 {
     margin-bottom: 10px;
     padding-top: 10px;
     padding-bottom: 10px;
+    font-style: normal;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 input {
     margin: 10px;
+    font-style: normal;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 button {
     margin-right: 5px;
+    font-style: normal;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .footer {
@@ -79,6 +99,7 @@ button {
     z-index: 100;
     background: rgb(223, 255, 230, 0.95);
     text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
     align-items: center;
     left: 0px;
     right: 0px;
@@ -97,6 +118,8 @@ button {
     padding-left: 10px;
     vertical-align: bottom;
     text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: normal;
 }
 
 .footer-ghost {
@@ -111,12 +134,16 @@ button {
 
 .link {
     color: white;
+    font-family: Arial, Helvetica, sans-serif;    
+    font-style: normal;
     text-shadow: 2px 2px 2px rgba(100, 150, 150, 1);
 }
 
 .description {
     background-color: rgb(112, 182, 130, 0.8);
     color: white;
+    font-style: normal;
+    font-family: Arial, Helvetica, sans-serif;
     text-shadow: 2px 2px 2px rgba(100, 150, 150, 1);
     border-radius: 12px;
     padding-bottom: 30px;
@@ -138,12 +165,16 @@ button {
 .logged-user {
     color: white;
     text-decoration: underline;
+    font-style: normal;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .navbar-nav {
     margin: auto;
     padding-top: 0;
     text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: normal;
 }
 
 .full {
@@ -164,6 +195,8 @@ button {
     align-content: center;
     align-self: center;
     text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: normal;
 }
 
 .nav-link {
@@ -177,6 +210,8 @@ button {
 .nav-text {
     margin-top: 0;
     color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: normal;
 }
 
 .hidden-nav {

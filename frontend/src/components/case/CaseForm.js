@@ -13,6 +13,7 @@ import * as Yup from 'yup'
 import { Formik } from 'formik'
 import { updateCase } from '../../reducers/caseReducer'
 import ShowPreviewImage from '../test/components/ShowPreviewImage.js'
+import '../../style.css'
 
 const CaseForm = ({ caseToEdit }) => {
     const testsFromTestGroups = () => {
@@ -267,7 +268,7 @@ const CaseForm = ({ caseToEdit }) => {
     }
 
     return (
-        <div>
+        <div className='formtext'>
             <Modal>
                 <Notification></Notification>
             </Modal>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Form, Image } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
+import '../../style.css'
 
 const BacteriaSpecificImages = ({ controlId, setBacterium, bacteria,
     bacterium, handleSpecificImg,
@@ -28,10 +29,10 @@ const BacteriaSpecificImages = ({ controlId, setBacterium, bacteria,
     return (
         <Form.Group controlId={controlId}>
             <Form.Label style={{ paddingTop: '40px' }}><h4>{library.title}</h4></Form.Label>
-            <ul>
+            <ul >
                 {bacteriaSpecificImages.map((image, i) => {
                     return (
-                        <li key={i}>{image.name ? image.name : image.bacterium.name} &ensp;&ensp;
+                        <li className='imagetext' key={i}>{image.name ? image.name : image.bacterium.name} &ensp;&ensp;
                             {image.url ?
                                 <Image src={`/${image.url}`} thumbnail width={100} /> :
                                 <Image src={URL.createObjectURL(image)} width={100}></Image>
@@ -50,7 +51,7 @@ const BacteriaSpecificImages = ({ controlId, setBacterium, bacteria,
             <Form.Label style={marginStyle}>{library.bacterium}</Form.Label>
             <Form.Control
                 as='select'
-                style={marginStyle}
+                className='fomrtext'
                 value={bacterium}
                 isInvalid={error}
                 onChange={(event) => handleChange(event)}>

@@ -13,6 +13,7 @@ import * as Yup from 'yup'
 import { Formik } from 'formik'
 import Notification from '../utility/Notification'
 import { setNotification } from '../../reducers/notificationReducer'
+import '../../style.css'
 
 const TestForm = ({ testToEdit }) => {
     /* style parameters */
@@ -227,7 +228,7 @@ const TestForm = ({ testToEdit }) => {
     }
 
     return (
-        <div>
+        <div className='formtext'>
             <Modal>
                 <Notification></Notification>
             </Modal>
@@ -305,7 +306,7 @@ const TestForm = ({ testToEdit }) => {
                                             <Form.Group controlId='editControlImage'>
                                                 {ctrl && testToEdit.controlImage ?
                                                     <>
-                                                        <p style={ { marginLeft: '10px', marginTop: '20px', marginBottom: '0', fontSize: '0.8em' } }>{ library.oldImage }</p>
+                                                        <p>{ library.oldImage }</p>
                                                         <Image src={`/${testToEdit.controlImage.url}`} thumbnail width={100} />
                                                         <DeleteButton
                                                             id='deleteControl'
@@ -340,7 +341,7 @@ const TestForm = ({ testToEdit }) => {
                                             <Form.Group controlId='editPositiveResultImage'>
                                                 {pos && testToEdit.positiveResultImage ?
                                                     <>
-                                                        <p style={ { marginLeft: '10px', marginTop: '20px', marginBottom: '0', fontSize: '0.8em' } }>{ library.oldImage }</p>
+                                                        <p>{ library.oldImage }</p>
                                                         <Image src={`/${testToEdit.positiveResultImage.url}`} thumbnail width={100} />
                                                         <DeleteButton
                                                             id='deletePositive'
@@ -374,7 +375,7 @@ const TestForm = ({ testToEdit }) => {
                                             <Form.Group controlId='editNegativeResultImage'>
                                                 {neg && testToEdit.negativeResultImage ?
                                                     <>
-                                                        <p style={ { marginLeft: '10px', marginTop: '20px', marginBottom: '0', fontSize: '0.8em' } }>{ library.oldImage }</p>
+                                                        <p>{ library.oldImage }</p>
                                                         <Image src={`/${testToEdit.negativeResultImage.url}`} thumbnail width={100} />
                                                         <DeleteButton
                                                             id='deleteNegative'

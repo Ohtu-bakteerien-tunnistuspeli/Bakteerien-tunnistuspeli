@@ -60,7 +60,7 @@ const App = () => {
         <div className='page'>
             {user ?
                 <Idle
-                    timeout={7200000}
+                    timeout={7200000}//7200000
                     onChange={({ idle }) => {
                         if (idle && user) {
                             dispatch(logout(history))

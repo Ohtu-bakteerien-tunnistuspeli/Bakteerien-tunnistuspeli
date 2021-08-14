@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
-
+import '../../../style.css'
 const SelectBacterium = ({ bacteriumId, setBacteriumId, onChange, error, bacteria, touched, setFieldTouched }) => {
     const library = useSelector(state => state.language)?.library?.frontend.case.components
     const handleChange = event => {
@@ -13,7 +13,7 @@ const SelectBacterium = ({ bacteriumId, setBacteriumId, onChange, error, bacteri
         onChange('bacteriumId', event.target.value)
     }
     return (
-        <Form.Group controlId='bacterium'>
+        <Form.Group controlId='bacterium' className='formtext'>
             <Form.Label>{library.bacterium}</Form.Label>
             <Form.Control as='select'
                 onChange={handleChange}
@@ -22,7 +22,7 @@ const SelectBacterium = ({ bacteriumId, setBacteriumId, onChange, error, bacteri
             >
                 <option value='' disabled hidden>{library.chooseBacterium}</option>
                 {bacteria.map(bacterium =>
-                    <option key={bacterium.id} value={bacterium.id}>{bacterium.name}</option>
+                    <option key={bacterium.id} value={bacterium.id} >{bacterium.name}</option>
                 )}
             </Form.Control>
             <Form.Control.Feedback type='invalid' hidden={!touched}>
