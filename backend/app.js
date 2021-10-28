@@ -24,8 +24,6 @@ if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
             useNewUrlParser: true,
             useUnifiedTopology: true
         }
-        mongoose.set('useFindAndModify', false)
-        mongoose.set('useCreateIndex', true)
         mongoose.connect(mongoUri, mongooseOpts)
         mongoose.connection.on('error', (e) => {
             if (e.message.code === 'ETIMEDOUT') {
@@ -184,8 +182,6 @@ if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     })
 
 } else if (process.env.NODE_ENV === 'production') {
-    mongoose.set('useFindAndModify', false)
-    mongoose.set('useCreateIndex', true)
     mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 } else {
     var mongoDB = 'mongodb://localhost:27017/test'
