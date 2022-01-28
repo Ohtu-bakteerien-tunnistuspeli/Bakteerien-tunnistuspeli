@@ -32,7 +32,7 @@
             "temporaryPasswordEmailHtmlStart": "<p>Väliaikainen salasanasi on \"<span style=\"color: black; background: black; span:hover { color: white }\">",
             "temporaryPasswordEmailHtmlEnd": "</span>\". Salasana vanhentuu 15min kuluttua.</p>",
             "emailError": "Sähköpostia ei voitu lähettää.",
-            "emailSuccessStart": "Väliaikainen salasana lähetetty sähöpostiosoitteeseen ",
+            "emailSuccessStart": "Väliaikainen salasana lähetetty sähköpostiosoitteeseen ",
             "emailSuccessEnd": ".",
             "userNotFoundOrEmailWrong": "Käyttäjää ei löytynyt tai sähköposti on väärä.",
             "wrongPassword": "Väärä salasana."
@@ -308,7 +308,7 @@
                 "password": "Salasana",
                 "passwordAgain": "Salasana uudelleen",
                 "updateInformation": "Päivitä Tiedot",
-                "modalButton": "Vahvista proffilitietojen päivitys",
+                "modalButton": "Vahvista profiilitietojen päivitys",
                 "modalHeaderStart": "Käyttäjän ",
                 "modalHeaderEnd": " profiilitietojen muuttamisen varmennus",
                 "warning": "Ole hyvä ja anna tämänhetkinen salasanasi vahvistaaksesi henkilöllisyytesi ja tallentaaksesi profiilisi muutokset.",
