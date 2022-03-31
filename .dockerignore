@@ -1,0 +1,12 @@
+*/node_modules/
+*/.env
+/frontend/cypress
+.dockerignore
+.gitignore
+*/.eslintrc.js
+*/.eslintignore
+*/cypress.json
+*/
+documentation/
+/backend/tests/
+*/jest.config
