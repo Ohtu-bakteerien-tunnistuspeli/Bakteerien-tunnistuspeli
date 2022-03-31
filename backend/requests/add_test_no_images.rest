@@ -1,8 +1,0 @@
-POST http://localhost:3001/api/test
-Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI1ZjcxYzBhNjZmODQ2YzMzZWMzMTRjOGEiLCJpYXQiOjE2MDEyOTEwNDl9.yOSIY4fD9TDOCkd2wo7547WLJeDS86iRZ9ezynAesjI
-
-{
-    "name": "testi",
-    "type": "tyyppi"
-}

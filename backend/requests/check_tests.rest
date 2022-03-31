@@ -1,7 +1,0 @@
-POST http://localhost:3001/api/game/5fc8e84d047aad47f8c335ab/checkTests
-Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI1ZmM4ZTg0ZDA0N2FhZDQ3ZjhjMzM1OTQiLCJpYXQiOjE2MDcwMDU4OTR9.r3xaPKtYj8b7tfHGTDtgEBNggCAuzpTqeoJ14Aa5zYM
-
-{
-    "tests": []
-}

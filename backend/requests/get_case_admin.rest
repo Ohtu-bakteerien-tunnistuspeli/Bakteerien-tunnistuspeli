@@ -1,3 +1,0 @@
-GET http://localhost:3001/api/case
-Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI1ZmM4ZTg0ZDA0N2FhZDQ3ZjhjMzM1OTQiLCJpYXQiOjE2MDcwMDU2MzF9.oshUOdR1MUBZdvUpC6WkgG_gcTevhfdeXfcNNuUtSAk

@@ -1,3 +1,0 @@
-GET http://localhost:3001/api/credit
-Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI1ZjlhODg5YjdhNmE3NjM5YzhkZjExNzUiLCJpYXQiOjE2MDM5NjMwNTR9.UdlME703lLeMJxdC3CSUuSJfcLG7RHwQTkr9wc5EgyM

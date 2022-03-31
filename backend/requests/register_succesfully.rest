@@ -1,8 +1,0 @@
-POST http://localhost:3001/api/user/register
-Content-Type: application/json
-
-{
-    "username": "newUser",
-    "password": "newGoodPassword123",
-    "email": "email@email.fi",
-}

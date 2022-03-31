@@ -1,3 +1,0 @@
-GET http://localhost:3001/api/bacteria
-Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI1ZjcxY2NhMzBkMzgzNDNjMWJjMTJkMmIiLCJpYXQiOjE2MDEyOTM1NDZ9.GM-wzGyYBfS5dvidS1vzHjoS4ZyNjgAu7zsg2ahg4Qc

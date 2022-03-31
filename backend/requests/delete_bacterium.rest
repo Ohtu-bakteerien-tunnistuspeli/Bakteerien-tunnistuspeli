@@ -1,3 +1,0 @@
-DELETE http://localhost:3001/api/bacteria/5f61d01a2eef7c27acc24af1
-Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI1ZjYxY2U3MzJlZWY3YzI3YWNjMjRhZWYiLCJpYXQiOjE2MDAyNDU4MDF9.vlJITaYp5i4qM-YxcL5rFs_5YT_t5sHwDSN-WYsr8Ow
