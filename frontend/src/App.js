@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
+import IdleTimer from 'react-idle-timer'
 import { Switch, Route, Redirect, useHistory, Link } from 'react-router-dom'
-import Idle from 'react-idle'
 import { useDispatch, useSelector } from 'react-redux'
 import { returnUser, logout } from './reducers/userReducer'
 import Login from './components/user/Login'
@@ -59,14 +59,13 @@ const App = () => {
     return (
         <div className='page'>
             {user ?
-                <Idle
-                    timeout={7200000}//7200000
-                    onChange={({ idle }) => {
-                        if (idle && user) {
-                            dispatch(logout(history))
-                            alert(library.app.inactivityMessage)
-                        }
-                    }} />
+                <IdleTimer
+                    timeout={7200000}
+                    onIdle={() => {
+                        dispatch(logout(history))
+                        alert(library.app.inactivityMessage)
+                    }}
+                />
                 :
                 null
             }
