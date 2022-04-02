@@ -8,7 +8,7 @@ const get = (token) => {
         .catch(error => error.response.data)
 }
 
-const add = async (name, bacterium, anamnesis, completionText, completionImage, samples, testGroups, token) => {
+const add = (name, bacterium, anamnesis, completionText, completionImage, samples, testGroups, token) => {
     for (let i = 0; i < testGroups.length; i++) {
         let testGroup = testGroups[i]
         for (let j = 0; j < testGroup.length; j++) {
@@ -32,7 +32,7 @@ const add = async (name, bacterium, anamnesis, completionText, completionImage, 
     return axios.post(baseUrl, formData, config).then(response => response.data).catch(error => error.response.data)
 }
 
-const update = async (id, name, bacterium, anamnesis, completionText, completionImage, samples, testGroups, deleteEndImage, token) => {
+const update = (id, name, bacterium, anamnesis, completionText, completionImage, samples, testGroups, deleteEndImage, token) => {
     for (let i = 0; i < testGroups.length; i++) {
         let testGroup = testGroups[i]
         for (let j = 0; j < testGroup.length; j++) {
@@ -59,7 +59,7 @@ const update = async (id, name, bacterium, anamnesis, completionText, completion
         .catch(error => error.response.data)
 }
 
-const updateHints = async (id, hints, token) => {
+const updateHints = (id, hints, token) => {
     const config = { headers: { Authorization: token } }
     return axios.put(`${baseUrl}/${id}/hints`, hints, config)
         .then(response => response.data)
@@ -71,4 +71,10 @@ const deleteCase = (id, token) => {
     return axios.delete(`${baseUrl}/${id}`, config).then(response => response).catch(error => error)
 }
 
-export default { get, add, update, updateHints, deleteCase }
+export default {
+    get: get,
+    add: add,
+    update: update,
+    updateHints: updateHints,
+    deleteCase: deleteCase
+}

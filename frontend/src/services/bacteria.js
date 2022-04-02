@@ -7,7 +7,7 @@ const get = (token) => {
     return axios.get(baseUrl, config).then(response => response.data).catch(error => error.response.data)
 }
 
-const add = async (name, token) => {
+const add = (name, token) => {
     const config = { headers: { Authorization: token } }
     return axios.post(baseUrl, { name: name }, config).then(response => response.data).catch(error => error.response.data)
 }
@@ -22,4 +22,4 @@ const deleteBacterium = (id, token) => {
     return axios.delete(`${baseUrl}/${id}`, config).then(response => response).catch(error => error.response.data)
 }
 
-export default { get, add, deleteBacterium, update }
+export default { get, add, update, deleteBacterium }

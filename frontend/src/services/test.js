@@ -7,7 +7,7 @@ const get = (token) => {
     return axios.get(baseUrl, config).then(response => response.data).catch(error => error.response.data)
 }
 
-const add = async (name, type, contImg, posImg, negImg, bacteriaSpes, token) => {
+const add =  (name, type, contImg, posImg, negImg, bacteriaSpes, token) => {
     const formData = new FormData()
     formData.append('name', name )
     formData.append('type', type )
@@ -19,7 +19,7 @@ const add = async (name, type, contImg, posImg, negImg, bacteriaSpes, token) => 
     return axios.post(baseUrl, formData , config).then(response => response.data).catch(error => error.response.data)
 }
 
-const update = async (id, name, type, contImg, photoPos, photoNeg, bacteriaSpesif, photosToDelete, deleteSpecifics, token) => {
+const update = (id, name, type, contImg, photoPos, photoNeg, bacteriaSpesif, photosToDelete, deleteSpecifics, token) => {
     const formData = new FormData()
     formData.append('id', id )
     formData.append('name', name )
@@ -38,7 +38,7 @@ const update = async (id, name, type, contImg, photoPos, photoNeg, bacteriaSpesi
         .catch(error => error.response.data)
 }
 
-const deleteTest = async (id, token) => {
+const deleteTest = (id, token) => {
     const config = { headers: { Authorization: token } }
     return axios.delete(`${baseUrl}/${id}`, config)
         .then(response => response)
