@@ -71,10 +71,4 @@ const deleteCase = (id, token) => {
     return axios.delete(`${baseUrl}/${id}`, config).then(response => response).catch(error => error)
 }
 
-export default {
-    get: get,
-    add: add,
-    update: update,
-    updateHints: updateHints,
-    deleteCase: deleteCase
-}
+export default { get, add, update, updateHints, deleteCase }
