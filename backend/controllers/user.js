@@ -206,6 +206,13 @@ userRouter.post('/temporarypassword', async (request, response) => {
                     port: config.EMAILPORT,
                     secure: false,
                 })
+            } else if (config.EMAILHOST.includes('localhost')) {
+                transporter = nodemailer.createTransport({
+                    from: config.EMAILUSER,
+                    host: config.EMAILHOST,
+                    port: config.EMAILPORT,
+                    secure: false,
+                })
             } else {
                 transporter = nodemailer.createTransport({
                     host: config.EMAILHOST,
