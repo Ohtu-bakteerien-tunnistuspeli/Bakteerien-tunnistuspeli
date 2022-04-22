@@ -191,7 +191,6 @@ userRouter.post('/temporarypassword', async (request, response) => {
                     host: config.EMAILHOST,
                     port: config.EMAILPORT,
                     secure: false,
-                    proxy: config.EMAILPROXY,
                     tls: {
                         ciphers: 'SSLv3'
                     },
@@ -206,14 +205,12 @@ userRouter.post('/temporarypassword', async (request, response) => {
                     host: config.EMAILHOST,
                     port: config.EMAILPORT,
                     secure: false,
-                    proxy: config.EMAILPROXY
                 })
             } else {
                 transporter = nodemailer.createTransport({
                     host: config.EMAILHOST,
                     port: config.EMAILPORT,
                     secure: true,
-                    proxy: config.EMAILPROXY,
                     auth: {
                         user: config.EMAILUSER,
                         pass: config.EMAILPASSWORD,
