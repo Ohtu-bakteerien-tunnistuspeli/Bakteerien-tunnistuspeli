@@ -7,6 +7,7 @@ const EMAILHOST = process.env.EMAILHOST
 const EMAILUSER = process.env.EMAILUSER
 const EMAILPASSWORD = process.env.EMAILPASSWORD
 const EMAILPORT = process.env.EMAILPORT
+const EMAILPROXY = process.env.EMAILPROXY
 const validation = require('./../lib/validation.json')
 const library = require('./../lib/library.json')
 let MONGODB_URI
