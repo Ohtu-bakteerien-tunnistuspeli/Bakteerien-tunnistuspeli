@@ -24,6 +24,7 @@ module.exports = {
     EMAILUSER,
     EMAILPASSWORD,
     EMAILPORT,
+    EMAILPROXY,
     validation,
     library
 }
