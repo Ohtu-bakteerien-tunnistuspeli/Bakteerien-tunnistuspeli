@@ -185,27 +185,13 @@ userRouter.post('/temporarypassword', async (request, response) => {
     }
     if (user && user.email === request.body.email) {
         try {
-            let transporter
-            if (config.EMAILHOST.includes('helsinki')) {
-                transporter = nodemailer.createTransport({
+            let transporter  = nodemailer.createTransport({
                     from: config.EMAILUSER,
                     host: config.EMAILHOST,
                     port: config.EMAILPORT,
-                    secure: true,
-                    proxy: config.EMAILPROXY
+                    secure: false,
                 })
-            } else {
-                transporter = nodemailer.createTransport({
-                    host: config.EMAILHOST,
-                    port: config.EMAILPORT,
-                    secure: true,
-                    proxy: config.EMAILPROXY,
-                    auth: {
-                        user: config.EMAILUSER,
-                        pass: config.EMAILPASSWORD,
-                    },
-                })
-            }
+
             const temporaryPassword = uuidv4()
             await transporter.sendMail({
                 from: config.EMAILUSER,
