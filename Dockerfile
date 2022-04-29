@@ -1,19 +1,21 @@
 FROM node:14-alpine
 WORKDIR /app/backend
-COPY ./frontend/ ../frontend/
-COPY ./lib/ ../lib/
+
+COPY --chown=node:node ./frontend/ ../frontend/
+COPY --chown=node:node ./lib/ ../lib/
 
 RUN cd ../frontend && \
        npm ci --production && \
        cd ../backend
 
-COPY ./backend/ .
+COPY --chown=node:node  ./backend/ .
 
 RUN npm ci --production  && \
     npm run library && \
     npm run build:ui && \
     rm -rf /app/frontend/node_modules/*
 
+USER node
 EXPOSE 3001
 
 CMD npm start
