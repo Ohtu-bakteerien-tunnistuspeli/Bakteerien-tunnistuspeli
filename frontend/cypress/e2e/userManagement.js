@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 describe('User management', () => {
     beforeEach(() => {
         cy.request('POST', 'http://localhost:3001/api/testing/init')
