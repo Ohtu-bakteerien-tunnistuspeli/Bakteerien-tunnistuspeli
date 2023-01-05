@@ -3,9 +3,9 @@
 */cypress/
 .dockerignore
 .gitignore
-*/.eslintrc.js
+*/.eslintrc.json
 */.eslintignore
-*/cypress.json
+*/cypress.config.js
 documentation/
 /backend/tests/
 */jest.config
