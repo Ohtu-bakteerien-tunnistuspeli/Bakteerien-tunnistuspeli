@@ -37,12 +37,13 @@ jobs:
         PORT: 3001
         IMAGEURL: 'images'
     - name: Cypress run
-      uses: cypress-io/github-action@v2
+      uses: cypress-io/github-action@v5
       with:
+        browser: chrome
         start: npm start
-        working-directory: frontend
         wait-on: http://localhost:3000
         wait-on-timeout: 300
+        spec: frontend/cypress/e2e/*
       
   backend:
     runs-on: ubuntu-latest
