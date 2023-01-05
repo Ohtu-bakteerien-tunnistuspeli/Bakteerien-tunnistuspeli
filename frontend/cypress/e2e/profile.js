@@ -1,3 +1,4 @@
+/* eslint-disable cypress/no-unnecessary-waiting */
 /// <reference types="cypress" />
 describe('Profile management', () => {
     beforeEach(() => {
@@ -33,6 +34,7 @@ describe('Profile management', () => {
                 cy.get('#deleteUser').click()
                 cy.get('#confirmField').type('use')
                 cy.get('#confirm').click()
+                // eslint-disable-next-line cypress/no-unnecessary-waiting
                 cy.wait(500)
                 cy.contains('Väärä salasana')
             })

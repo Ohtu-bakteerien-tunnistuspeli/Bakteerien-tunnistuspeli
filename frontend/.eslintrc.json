@@ -2,13 +2,13 @@
     "env": {
         "browser": true,
         "es6": true,
-        "cypress/globals": true,
+        "cypress/globals": true
         //        "jest/globals": true
     },
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended",
-        "plugin:cypress/recommended",
+        "plugin:cypress/recommended"
     ],
     "parserOptions": {
         "ecmaFeatures": {
