@@ -44,7 +44,7 @@ jobs:
         start: npm start
         wait-on: http://localhost:3000
         wait-on-timeout: 300
-        spec: frontend/cypress/e2e/*
+        spec: cypress/e2e/*
       
   backend:
     runs-on: ubuntu-latest
