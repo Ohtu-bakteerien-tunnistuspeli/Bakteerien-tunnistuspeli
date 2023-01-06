@@ -323,14 +323,12 @@ describe('modifying a bacterium', () => {
             })
 
         const bacteriumToUpdate = await Bacterium.findOne({ name: 'koli' })
-        bacteriumToUpdate.name = 'Bakteeri'
         const updatedBacterium = await api
             .put(`/api/bacteria/${bacteriumToUpdate.id}`)
             .set('Authorization', `bearer ${user.body.token}`)
-            .send(bacteriumToUpdate)
+            .send({ id: bacteriumToUpdate.id, name: 'Bakteeri' })
             .expect(200)
             .expect('Content-Type', /application\/json/)
-
         expect(bacteriumToUpdate.id).toEqual(updatedBacterium.body.id)
         expect(updatedBacterium.body.name).toEqual('Bakteeri')
 
@@ -345,6 +343,7 @@ describe('modifying a bacterium', () => {
 
         const bacteriumToUpdate = await Bacterium.findOne({ name: 'koli' })
         bacteriumToUpdate.name = 'Bakteeri'
+
         const updatetBacterium = await api
             .put(`/api/bacteria/${bacteriumToUpdate.id}`)
             .set('Authorization', `bearer ${user.body.token}`)
@@ -363,11 +362,10 @@ describe('modifying a bacterium', () => {
             })
 
         const bacteriumToUpdate = await Bacterium.findOne({ name: 'koli' })
-        bacteriumToUpdate.name = 'tetanus'
         const updatedBacterium = await api
             .put(`/api/bacteria/${bacteriumToUpdate.id}`)
             .set('Authorization', `bearer ${user.body.token}`)
-            .send(bacteriumToUpdate)
+            .send({ id: bacteriumToUpdate.id, name: 'tetanus' })
             .expect(400)
             .expect('Content-Type', /application\/json/)
 

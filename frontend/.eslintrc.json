@@ -3,7 +3,6 @@
         "browser": true,
         "es6": true,
         "cypress/globals": true
-        //        "jest/globals": true
     },
     "extends": [
         "eslint:recommended",
