@@ -38,7 +38,7 @@ const userSchema = mongoose.Schema({
         }
         return true
       },
-      message: validationUser.classGroup.validationUserMessage,
+      message: validationUser.classGroup.validationMessage,
     },
     maxlength: [validationUser.classGroup.maxlength, validationUser.classGroup.maxMessage],
   },
@@ -48,7 +48,7 @@ const userSchema = mongoose.Schema({
       validator: mailAddress => {
         return /\S+@\S+/.test(mailAddress)
       },
-      message: validationUser.email.validationUserMessage,
+      message: validationUser.email.validationMessage,
     },
     required: [true, validationUser.email.requiredMessage],
     maxlength: [validationUser.email.maxlength, validationUser.email.maxMessage],
