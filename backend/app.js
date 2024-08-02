@@ -29,7 +29,6 @@ if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     .getUri()
     .then(mongoUri => {
       mongoose.set('strictQuery', false)
-      console.log(mongoUri)
       mongoose.connect(mongoUri)
       mongoose.connection.on('error', error => {
         if (error.message.code === 'ETIMEDOUT') {
