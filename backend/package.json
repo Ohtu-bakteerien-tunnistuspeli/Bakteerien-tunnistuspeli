@@ -6,10 +6,11 @@
   "scripts": {
     "start": "NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development nodemon index.js",
-    "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
-    "test-githubactions": "cross-env NODE_ENV=testserver jest --verbose --runInBand",
+    "test": "cross-env NODE_ENV=test node --test",
+    "test-githubactions": "cross-env NODE_ENV=testserver node --test",
     "build:ui": "rm -rf build && cd ../frontend && npm run build --prod && cp -r build ../backend",
     "lint": "eslint .",
+    "prettier": "prettier",
     "start:test": "cross-env NODE_ENV=test node index.js",
     "start:testServer": "cross-env NODE_ENV=testserver node index.js",
     "library": "cd .. && cd ./backend && rm -rf lib && cd .. && cp -r lib ./backend && cd frontend && rm -rf lib && cd .. && cp -r lib ./frontend/src"
@@ -17,33 +18,37 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "bcrypt": "^5.0.0",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.18.2",
+    "dotenv": "^8.6.0",
+    "express": "^4.19.2",
     "express-async-errors": "^3.1.1",
-    "jsonwebtoken": "^9.0.0",
-    "mongoose": "^6.0.12",
-    "mongoose-unique-validator": "^3.0.0",
-    "multer": "^1.4.2",
-    "nodemailer": "^6.7.2",
-    "uuid": "^8.3.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^6.13.0",
+    "mongoose-unique-validator": "^3.1.0",
+    "multer": "^1.4.4",
+    "nodemailer": "^6.9.14",
+    "uuid": "^8.3.2",
+    "winston": "^3.13.1",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
-    "cross-env": "^7.0.2",
-    "eslint": "^7.8.1",
-    "jest": "^27.3.1",
-    "mongodb-memory-server": "^6.7.5",
-    "nodemon": "^2.0.19",
-    "supertest": "^6.3.3"
+    "cross-env": "^7.0.3",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "jest": "^27.5.1",
+    "mongodb-memory-server": "^6.9.6",
+    "nodemon": "^2.0.22",
+    "prettier": "3.3.3",
+    "supertest": "^6.3.4"
   },
   "jest": {
     "testEnvironment": "node"
   },
   "config": {
     "mongodbMemoryServer": {
-      "version": "4.4.1"
+      "version": "4.2.8"
     }
   }
 }
