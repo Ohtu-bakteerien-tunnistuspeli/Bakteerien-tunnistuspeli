@@ -6,7 +6,6 @@ const Test = require('../models/testCase')
 const Case = require('../models/case')
 const Credit = require('../models/credit')
 
-
 router.post('/reset_bacteria', async (request, response) => {
   try {
     await Bacterium.deleteMany({})
@@ -55,29 +54,41 @@ router.post('/reset_credits', async (request, response) => {
 router.post('/credits', async (request, response) => {
   try {
     const pwd = await bcrypt.hash('user', 10)
-    const user1 = await new User({ username: 'user1', passwordHash: pwd, admin: false, email: 'example1@com', classGroup: 'C-15', studentNumber: '15678815' }).save()
-    const user2 = await new User({ username: 'user2', passwordHash: pwd, admin: false, email: 'example2@com', classGroup: 'C-21', studentNumber: '15678678' }).save()
-    const user3 = await new User({ username: 'user3', passwordHash: pwd, admin: false, email: 'example3@com', classGroup: 'C-21', studentNumber: '15674567' }).save()
+    const user1 = await new User({
+      username: 'user1',
+      passwordHash: pwd,
+      admin: false,
+      email: 'example1@com',
+      classGroup: 'C-15',
+      studentNumber: '15678815',
+    }).save()
+    const user2 = await new User({
+      username: 'user2',
+      passwordHash: pwd,
+      admin: false,
+      email: 'example2@com',
+      classGroup: 'C-21',
+      studentNumber: '15678678',
+    }).save()
+    const user3 = await new User({
+      username: 'user3',
+      passwordHash: pwd,
+      admin: false,
+      email: 'example3@com',
+      classGroup: 'C-21',
+      studentNumber: '15674567',
+    }).save()
     const user1Credit = new Credit({
       user: user1.id,
-      testCases: [
-        'Maitotila 6',
-        'Maitotila 4'
-      ]
+      testCases: ['Maitotila 6', 'Maitotila 4'],
     })
     const user2Credit = new Credit({
       user: user2.id,
-      testCases: [
-        'Maitotila 23',
-        'Maitotila 4'
-      ]
+      testCases: ['Maitotila 23', 'Maitotila 4'],
     })
     const user3Credit = new Credit({
       user: user3.id,
-      testCases: [
-        'Maitotila 5',
-        'Maitotila 7'
-      ]
+      testCases: ['Maitotila 5', 'Maitotila 7'],
     })
     await user1Credit.save()
     await user2Credit.save()
@@ -104,7 +115,7 @@ router.post('/init', async (request, response) => {
       studentNumber: '1234567',
       classGroup: 'C-12',
       admin: false,
-      passwordHash
+      passwordHash,
     })
     await user.save()
     passwordHash = await bcrypt.hash('adminadmin', saltRounds)
@@ -114,24 +125,24 @@ router.post('/init', async (request, response) => {
       studentNumber: '',
       classGroup: '',
       admin: true,
-      passwordHash
+      passwordHash,
     })
     await admin.save()
 
     const bac1 = new Bacterium({
-      name: 'Streptococcus agalactiae'
+      name: 'Streptococcus agalactiae',
     })
 
     const bac2 = new Bacterium({
-      name: 'Staphylococcus aureus'
+      name: 'Staphylococcus aureus',
     })
 
     const bac3 = new Bacterium({
-      name: 'Tetanus'
+      name: 'Tetanus',
     })
 
     const bac4 = new Bacterium({
-      name: 'Koli'
+      name: 'Koli',
     })
 
     await bac4.save()
@@ -141,41 +152,41 @@ router.post('/init', async (request, response) => {
 
     const initialTestCase1 = new Test({
       name: 'Veriagar, +37 °C, aerobinen kasvatus',
-      type: 'Viljely'
+      type: 'Viljely',
     })
 
     const initialTestCase2 = new Test({
       name: 'Gram-värjäys',
-      type: 'Värjäys'
+      type: 'Värjäys',
     })
 
     const initialTestCase3 = new Test({
       name: 'Katalaasitesti',
-      type: 'Testi'
+      type: 'Testi',
     })
     const initialTestCase4 = new Test({
       name: 'HIRS-sarja (hippuraatti, inuliini, raffinoosi, sorbitoli)',
-      type: 'Testi'
+      type: 'Testi',
     })
 
     const initialTestCase5 = new Test({
       name: 'Eskuliiniveriagar',
-      type: 'Viljely'
+      type: 'Viljely',
     })
 
     const initialTestCase6 = new Test({
       name: 'Edwardsin agar',
-      type: 'Viljely'
+      type: 'Viljely',
     })
 
     const initialTestCase7 = new Test({
       name: 'CAMP-testi',
-      type: 'Testi'
+      type: 'Testi',
     })
 
     const initialTestCase8 = new Test({
       name: 'Cypress Testi',
-      type: 'Viljely'
+      type: 'Viljely',
     })
 
     await initialTestCase1.save()
@@ -194,25 +205,34 @@ router.post('/init', async (request, response) => {
       samples: [
         {
           description: 'Maitonäyte Muurikin kaikista neljänneksistä',
-          rightAnswer: true
+          rightAnswer: true,
         },
         {
           description: 'Tankkimaitonäyte',
-          rightAnswer: false
+          rightAnswer: false,
         },
         {
           description: 'Ulostenäyte Muurikilta',
-          rightAnswer: false
+          rightAnswer: false,
         },
         {
           description: 'Virtsanäyte Muurikilta',
-          rightAnswer: false
-        }
+          rightAnswer: false,
+        },
       ],
       testGroups: [
-        [{ tests: [{ test: initialTestCase1, positive: true }], isRequired: false }, { tests: [{ test: initialTestCase2, positive: true }, { test: initialTestCase4, positive: true }], isRequired: true }],
-        [{ tests: [{ test: initialTestCase3, positive: false }], isRequired: true }]
-      ]
+        [
+          { tests: [{ test: initialTestCase1, positive: true }], isRequired: false },
+          {
+            tests: [
+              { test: initialTestCase2, positive: true },
+              { test: initialTestCase4, positive: true },
+            ],
+            isRequired: true,
+          },
+        ],
+        [{ tests: [{ test: initialTestCase3, positive: false }], isRequired: true }],
+      ],
     })
     await initialCase.save()
     response.status(200).json()
@@ -238,22 +258,27 @@ router.post('/cases', async (request, response) => {
     const lancefield = await new Test({ name: 'Lancefield määritys', type: 'Testi' }).save()
     const penisilliini = await new Test({ name: 'Penisilliinin sietokoe agarvaluamenetelmällä', type: 'Testi' }).save()
     await new Test({ name: 'Testi ei kuulu testiryhmiin', type: 'Testi' }).save()
-    const textForAnamesis = 'Tilalla on 27 lypsävää lehmää parsinavetassa ja lisäksi nuorkarjaa. Kuivikkeena käytetään kutteria, vesi tulee omasta kaivosta. Pääosa lehmistä on omaa tuotantoa, mutta navetan laajennuksen yhteydessä edellisenä kesänä hankittiin muutama uusi tiine eläin, jotka poikivat loppusyksystä.'
-    'Yleisesti utareterveys on ollut tilalla hyvä; yksi lehmä on solutellut jo pidempään. Muurikki on alkanut oireilla vasta hiljan. Varsinaisia yleisoireita ei ole aivan hienoista vaisuutta lukuun ottamatta. Utare on kuitenkin selvästi turvonnut, soluluku noussut kaikissa neljänneksissä ja maitomäärä pudonnut.'
-    'Vasemman takaneljänneksen maito on hiukan kokkareista. '
-    const samples = [{
-      description: 'Tankin maitonäyte',
-      rightAnswer: false
-    }, {
-      description: 'Ulostenäyte Muurikilta',
-      rightAnswer: false
-    }, {
-      description: 'Maitonäyte Muurikin kaikista neljänneksistä',
-      rightAnswer: true
-    }, {
-      description: 'Virtsanäyte Muurikilta',
-      rightAnswer: false
-    },
+    const textForAnamesis =
+      'Tilalla on 27 lypsävää lehmää parsinavetassa ja lisäksi nuorkarjaa. Kuivikkeena käytetään kutteria, vesi tulee omasta kaivosta. Pääosa lehmistä on omaa tuotantoa, mutta navetan laajennuksen yhteydessä edellisenä kesänä hankittiin muutama uusi tiine eläin, jotka poikivat loppusyksystä.'
+    ;('Yleisesti utareterveys on ollut tilalla hyvä; yksi lehmä on solutellut jo pidempään. Muurikki on alkanut oireilla vasta hiljan. Varsinaisia yleisoireita ei ole aivan hienoista vaisuutta lukuun ottamatta. Utare on kuitenkin selvästi turvonnut, soluluku noussut kaikissa neljänneksissä ja maitomäärä pudonnut.')
+    ;('Vasemman takaneljänneksen maito on hiukan kokkareista. ')
+    const samples = [
+      {
+        description: 'Tankin maitonäyte',
+        rightAnswer: false,
+      },
+      {
+        description: 'Ulostenäyte Muurikilta',
+        rightAnswer: false,
+      },
+      {
+        description: 'Maitonäyte Muurikin kaikista neljänneksistä',
+        rightAnswer: true,
+      },
+      {
+        description: 'Virtsanäyte Muurikilta',
+        rightAnswer: false,
+      },
     ]
     let case1 = {
       name: 'Maitotila 1',
@@ -262,7 +287,7 @@ router.post('/cases', async (request, response) => {
       completionText: 'Well Done!',
       samples: samples,
       testGroups: [[]],
-      complete: true
+      complete: true,
     }
     let case2 = {
       name: 'Maitotila 2',
@@ -270,66 +295,90 @@ router.post('/cases', async (request, response) => {
       anamnesis: 'Purely for testing',
       samples: [],
       testGroups: [[]],
-      complete: false
+      complete: false,
     }
     const testGroups = [
       [
         {
-          tests: [{
-            test: veriagar.id,
-            positive: true
-          }],
+          tests: [
+            {
+              test: veriagar.id,
+              positive: true,
+            },
+          ],
           isRequired: true,
-        }
-      ], [
+        },
+      ],
+      [
         {
-          tests: [{
-            test: gram.id,
-            positive: true
-          }],
-          isRequired: true
-        }
-      ], [
+          tests: [
+            {
+              test: gram.id,
+              positive: true,
+            },
+          ],
+          isRequired: true,
+        },
+      ],
+      [
         {
-          tests: [{
-            test: katalaasi.id,
-            positive: false
-          }],
+          tests: [
+            {
+              test: katalaasi.id,
+              positive: false,
+            },
+          ],
           isRequired: true,
-        }
-      ], [
+        },
+      ],
+      [
         {
-          tests: [{
-            test: hirs.id,
-            positive: true
-          }],
+          tests: [
+            {
+              test: hirs.id,
+              positive: true,
+            },
+          ],
           isRequired: true,
-        }, {
-          tests: [{
-            test: eskuliini.id,
-            positive: true
-          }, {
-            test: edwards.id,
-            positive: true
-          }],
+        },
+        {
+          tests: [
+            {
+              test: eskuliini.id,
+              positive: true,
+            },
+            {
+              test: edwards.id,
+              positive: true,
+            },
+          ],
           isRequired: true,
-        }, {
-          tests: [{
-            test: penisilliini.id,
-            positive: true
-          }],
+        },
+        {
+          tests: [
+            {
+              test: penisilliini.id,
+              positive: true,
+            },
+          ],
           isRequired: true,
-        }, {
-          tests: [{
-            test: lancefield.id,
-            positive: true
-          }],
+        },
+        {
+          tests: [
+            {
+              test: lancefield.id,
+              positive: true,
+            },
+          ],
           isRequired: false,
-        }, {
-          tests: [{
-            test: camp.id,
-            postive: true,
-          }],
+        },
+        {
+          tests: [
+            {
+              test: camp.id,
+              postive: true,
+            },
+          ],
           isRequired: false,
         },
       ],
@@ -351,7 +400,7 @@ router.post('/test_editing', async (request, response) => {
     await Case.deleteMany({})
     const initialTestCase = new Test({
       name: 'Cypress Testi',
-      type: 'Viljely'
+      type: 'Viljely',
     })
 
     await initialTestCase.save()

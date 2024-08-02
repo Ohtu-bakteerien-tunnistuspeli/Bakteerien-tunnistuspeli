@@ -3,11 +3,11 @@ const bcrypt = require('bcrypt')
 const userRouter = require('express').Router()
 const User = require('../models/user')
 const Credit = require('../models/credit')
-const config = require('../utils/config')
+const { library, validation, SECRET, EMAILUSER, EMAILHOST, EMAILPASSWORD, EMAILPORT } = require('../utils/config')
 const nodemailer = require('nodemailer')
 const { v4: uuidv4 } = require('uuid')
-const validation = config.validation.user
-const library = config.library.backend.user
+const validationUser = validation.user
+const libraryUser = library.backend.user
 const checkPassword = require('zxcvbn')
 
 userRouter.post('/login', async (request, response) => {
@@ -17,7 +17,7 @@ userRouter.post('/login', async (request, response) => {
   try {
     if (!user) {
       return response.status(400).json({
-        error: library.invalidUsernameOrPassword
+        error: libraryUser.invalidUsernameOrPassword,
       })
     }
     let passwordCorrect = await bcrypt.compare(body.password, user.passwordHash)
@@ -30,12 +30,12 @@ userRouter.post('/login', async (request, response) => {
     }
     if (!passwordCorrect) {
       return response.status(400).json({
-        error: library.invalidUsernameOrPassword
+        error: libraryUser.invalidUsernameOrPassword,
       })
     }
   } catch (error) {
     return response.status(400).json({
-      error: library.invalidUsernameOrPassword
+      error: libraryUser.invalidUsernameOrPassword,
     })
   }
 
@@ -43,36 +43,36 @@ userRouter.post('/login', async (request, response) => {
     username: user.username,
     id: user._id,
   }
-  const token = jwt.sign(userForToken, config.SECRET)
-  response
-    .status(200)
-    .send({
-      token,
-      username: user.username,
-      admin: user.admin,
-      classGroup: user.classGroup,
-      email: user.email,
-      studentNumber: user.studentNumber,
-      id: user._id,
-      temporaryPasswordUsed
-    })
+  const token = jwt.sign(userForToken, SECRET)
+  response.status(200).send({
+    token,
+    username: user.username,
+    admin: user.admin,
+    classGroup: user.classGroup,
+    email: user.email,
+    studentNumber: user.studentNumber,
+    id: user._id,
+    temporaryPasswordUsed,
+  })
 })
 
 userRouter.post('/register', async (request, response) => {
   const body = request.body
   if (!body.password) {
-    return response.status(400).json({ error: validation.password.requiredMessage })
-  } else if (body.password.length < validation.password.minlength) {
-    return response.status(400).json({ error: validation.password.minMessage })
-  } else if (body.password.length > validation.password.maxlength) {
-    return response.status(400).json({ error: validation.password.maxMessage })
-  } else if (body.password === body.username ||
-        body.password === body.classGroup ||
-        body.password === body.email ||
-        body.password === body.newStudentNumber) {
-    return response.status(400).json({ error: validation.password.uniqueMessage })
+    return response.status(400).json({ error: validationUser.password.requiredMessage })
+  } else if (body.password.length < validationUser.password.minlength) {
+    return response.status(400).json({ error: validationUser.password.minMessage })
+  } else if (body.password.length > validationUser.password.maxlength) {
+    return response.status(400).json({ error: validationUser.password.maxMessage })
+  } else if (
+    body.password === body.username ||
+    body.password === body.classGroup ||
+    body.password === body.email ||
+    body.password === body.newStudentNumber
+  ) {
+    return response.status(400).json({ error: validationUser.password.uniqueMessage })
   } else if (checkPassword(body.password).score < 2) {
-    return response.status(400).json({ error: validation.password.unsecurePasswordMessage })
+    return response.status(400).json({ error: validationUser.password.unsecurePasswordMessage })
   } else {
     try {
       if (!body.classGroup) {
@@ -90,7 +90,7 @@ userRouter.post('/register', async (request, response) => {
         admin: false,
         classGroup: body.classGroup,
         email: body.email,
-        studentNumber: body.studentNumber
+        studentNumber: body.studentNumber,
       })
       await user.save()
       return response.status(200).send()
@@ -115,10 +115,13 @@ userRouter.delete('/:id', async (request, response) => {
       const userToDelete = await User.findById(request.params.id)
       let correct = false
       if (request.headers.data) {
-        correct = await bcrypt.compare(request.headers.data.substring(1, request.headers.data.length-1), userToDelete.passwordHash)
+        correct = await bcrypt.compare(
+          request.headers.data.substring(1, request.headers.data.length - 1),
+          userToDelete.passwordHash
+        )
       }
       if (!correct) {
-        return response.status(400).json({ error: library.wrongPassword })
+        return response.status(400).json({ error: libraryUser.wrongPassword })
       }
       const creditToDelete = await Credit.findOne({ user: userToDelete })
       await User.findByIdAndRemove(request.params.id)
@@ -149,9 +152,13 @@ userRouter.delete('/:id', async (request, response) => {
 userRouter.put('/:id/promote', async (request, response) => {
   if (request.user && request.user.admin) {
     try {
-      const updatedUser = await User.findByIdAndUpdate(request.params.id, { admin: true }, { new: true, runValidators: true, context: 'query' })
+      const updatedUser = await User.findByIdAndUpdate(
+        request.params.id,
+        { admin: true },
+        { new: true, runValidators: true, context: 'query' }
+      )
       if (!updatedUser) {
-        return response.status(400).json({ error: library.userNotFound })
+        return response.status(400).json({ error: libraryUser.userNotFound })
       }
       return response.status(200).json(updatedUser.toJSON())
     } catch (error) {
@@ -165,9 +172,13 @@ userRouter.put('/:id/promote', async (request, response) => {
 userRouter.put('/:id/demote', async (request, response) => {
   if (request.user && request.user.admin) {
     try {
-      const updatedUser = await User.findByIdAndUpdate(request.params.id, { admin: false }, { new: true, runValidators: true, context: 'query' })
+      const updatedUser = await User.findByIdAndUpdate(
+        request.params.id,
+        { admin: false },
+        { new: true, runValidators: true, context: 'query' }
+      )
       if (!updatedUser) {
-        return response.status(400).json({ error: library.userNotFound })
+        return response.status(400).json({ error: libraryUser.userNotFound })
       }
       return response.status(200).json(updatedUser.toJSON())
     } catch (error) {
@@ -186,55 +197,61 @@ userRouter.post('/temporarypassword', async (request, response) => {
   if (user && user.email === request.body.email) {
     try {
       let transporter
-      if (config.EMAILHOST.includes('outlook')) {
+      if (EMAILHOST.includes('outlook')) {
         transporter = nodemailer.createTransport({
-          host: config.EMAILHOST,
-          port: config.EMAILPORT,
+          host: EMAILHOST,
+          port: EMAILPORT,
           secure: false,
           tls: {
-            ciphers: 'SSLv3'
+            ciphers: 'SSLv3',
           },
           auth: {
-            user: config.EMAILUSER,
-            pass: config.EMAILPASSWORD,
-          }
+            user: EMAILUSER,
+            pass: EMAILPASSWORD,
+          },
         })
-      } else if (config.EMAILHOST.includes('helsinki')) {
+      } else if (EMAILHOST.includes('helsinki')) {
         transporter = nodemailer.createTransport({
-          from: config.EMAILUSER,
-          host: config.EMAILHOST,
-          port: config.EMAILPORT,
-          secure: false
+          from: EMAILUSER,
+          host: EMAILHOST,
+          port: EMAILPORT,
+          secure: false,
         })
       } else {
         transporter = nodemailer.createTransport({
-          host: config.EMAILHOST,
-          port: config.EMAILPORT,
+          host: EMAILHOST,
+          port: EMAILPORT,
           secure: true,
           auth: {
-            user: config.EMAILUSER,
-            pass: config.EMAILPASSWORD,
+            user: EMAILUSER,
+            pass: EMAILPASSWORD,
           },
         })
       }
 
       const temporaryPassword = uuidv4()
       await transporter.sendMail({
-        from: config.EMAILUSER,
+        from: EMAILUSER,
         to: user.email,
-        subject: library.temporaryPasswordEmailSubject,
-        text: `${library.temporaryPasswordEmailTextStart}${temporaryPassword}${library.temporaryPasswordEmailTextEnd}`,
-        html: `${library.temporaryPasswordEmailHtmlStart}${temporaryPassword}${library.temporaryPasswordEmailHtmlEnd}`,
+        subject: libraryUser.temporaryPasswordEmailSubject,
+        text: `${libraryUser.temporaryPasswordEmailTextStart}${temporaryPassword}${libraryUser.temporaryPasswordEmailTextEnd}`,
+        html: `${libraryUser.temporaryPasswordEmailHtmlStart}${temporaryPassword}${libraryUser.temporaryPasswordEmailHtmlEnd}`,
       })
       const saltRounds = 10
       const passwordHash = await bcrypt.hash(temporaryPassword, saltRounds)
-      await User.findByIdAndUpdate(user.id, { temporaryPassword: { passwordHash, generationTime: new Date() } }, { new: true, runValidators: true, context: 'query' })
+      await User.findByIdAndUpdate(
+        user.id,
+        { temporaryPassword: { passwordHash, generationTime: new Date() } },
+        { new: true, runValidators: true, context: 'query' }
+      )
     } catch (error) {
-      return response.status(400).json({ error: library.emailError })
+      return response.status(400).json({ error: libraryUser.emailError })
     }
-    return response.status(200).json({ message: `${library.emailSuccessStart}${user.email}${library.emailSuccessEnd}` })
+    return response
+      .status(200)
+      .json({ message: `${libraryUser.emailSuccessStart}${user.email}${libraryUser.emailSuccessEnd}` })
   } else {
-    return response.status(400).json({ error: library.userNotFoundOrEmailWrong })
+    return response.status(400).json({ error: libraryUser.userNotFoundOrEmailWrong })
   }
 })
 
@@ -242,13 +259,11 @@ userRouter.put('/', async (request, response) => {
   if (request.user) {
     const body = request.body
     if (!body.password) {
-      return response.status(400).json({ error: validation.password.requiredMessage })
+      return response.status(400).json({ error: validationUser.password.requiredMessage })
     } else {
       try {
         const user = await User.findOne({ username: request.user.username })
-        let passwordCorrect = user === null
-          ? false
-          : await bcrypt.compare(body.password, user.passwordHash)
+        let passwordCorrect = user === null ? false : await bcrypt.compare(body.password, user.passwordHash)
         if (!passwordCorrect && user.temporaryPassword) {
           const diffTime = Math.abs(new Date() - user.temporaryPassword.generationTime)
           if (diffTime <= 900000) {
@@ -267,17 +282,19 @@ userRouter.put('/', async (request, response) => {
           }
 
           if (body.newPassword) {
-            if (body.newPassword.length < validation.password.minlength) {
-              return response.status(400).json({ error: validation.password.minMessage })
-            } else if (body.newPassword.length > validation.password.maxlength) {
-              return response.status(400).json({ error: validation.password.maxMessage })
-            } else if (body.newPassword === body.newUsername ||
-                            body.newPassword === body.newClassGroup ||
-                            body.newPassword === body.newEmail ||
-                            body.newPassword === body.newStudentNumber) {
-              return response.status(400).json({ error: validation.password.uniqueMessage })
+            if (body.newPassword.length < validationUser.password.minlength) {
+              return response.status(400).json({ error: validationUser.password.minMessage })
+            } else if (body.newPassword.length > validationUser.password.maxlength) {
+              return response.status(400).json({ error: validationUser.password.maxMessage })
+            } else if (
+              body.newPassword === body.newUsername ||
+              body.newPassword === body.newClassGroup ||
+              body.newPassword === body.newEmail ||
+              body.newPassword === body.newStudentNumber
+            ) {
+              return response.status(400).json({ error: validationUser.password.uniqueMessage })
             } else if (checkPassword(body.newPassword).score < 2) {
-              return response.status(400).json({ error: validation.password.unsecurePasswordMessage })
+              return response.status(400).json({ error: validationUser.password.unsecurePasswordMessage })
             } else {
               const saltRounds = 10
               const passwordHash = await bcrypt.hash(body.newPassword, saltRounds)
@@ -293,13 +310,17 @@ userRouter.put('/', async (request, response) => {
             changes = { ...changes, classGroup: body.newClassGroup }
           }
 
-          const updatedUser = await User.findByIdAndUpdate(user.id, changes, { new: true, runValidators: true, context: 'query' })
+          const updatedUser = await User.findByIdAndUpdate(user.id, changes, {
+            new: true,
+            runValidators: true,
+            context: 'query',
+          })
           if (!updatedUser) {
-            return response.status(400).json({ error: library.userNotFound })
+            return response.status(400).json({ error: libraryUser.userNotFound })
           }
           return response.status(200).json(updatedUser.toJSON())
         } else {
-          return response.status(400).json({ error: library.wrongPassword })
+          return response.status(400).json({ error: libraryUser.wrongPassword })
         }
       } catch (error) {
         return response.status(400).json({ error: error.message })

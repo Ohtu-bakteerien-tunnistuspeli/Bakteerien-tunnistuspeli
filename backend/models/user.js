@@ -1,36 +1,36 @@
 const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
-const config = require('../utils/config')
-const validation = config.validation.user
+const { validation } = require('../utils/config')
+const validationUser = validation.user
 const userSchema = mongoose.Schema({
   username: {
     type: String,
-    minlength: [validation.username.minlength, validation.username.minMessage],
-    maxlength: [validation.username.maxlength, validation.username.maxMessage],
-    required: [true, validation.username.requiredMessage],
-    unique: [true, validation.username.uniqueMessage]
+    minlength: [validationUser.username.minlength, validationUser.username.minMessage],
+    maxlength: [validationUser.username.maxlength, validationUser.username.maxMessage],
+    required: [true, validationUser.username.requiredMessage],
+    unique: [true, validationUser.username.uniqueMessage],
   },
   passwordHash: {
     type: String,
-    required: true
+    required: true,
   },
   temporaryPassword: {
     passwordHash: {
-      type: String
+      type: String,
     },
     generationTime: {
-      type: Date
-    }
+      type: Date,
+    },
   },
   admin: {
     type: Boolean,
-    required: true
+    required: true,
   },
   classGroup: {
     type: String,
     validate: {
-      validator: (group) => {
-        if(group === 'C-') {
+      validator: group => {
+        if (group === 'C-') {
           return true
         }
         if (group) {
@@ -38,34 +38,34 @@ const userSchema = mongoose.Schema({
         }
         return true
       },
-      message: validation.classGroup.validationMessage
+      message: validationUser.classGroup.validationUserMessage,
     },
-    maxlength: [validation.classGroup.maxlength, validation.classGroup.maxMessage]
+    maxlength: [validationUser.classGroup.maxlength, validationUser.classGroup.maxMessage],
   },
   email: {
     type: String,
     validate: {
-      validator: (mailAddress) => {
+      validator: mailAddress => {
         return /\S+@\S+/.test(mailAddress)
       },
-      message: validation.email.validationMessage
+      message: validationUser.email.validationUserMessage,
     },
-    required: [true, validation.email.requiredMessage],
-    maxlength: [validation.email.maxlength, validation.email.maxMessage],
-    unique: [true, validation.email.uniqueMessage]
+    required: [true, validationUser.email.requiredMessage],
+    maxlength: [validationUser.email.maxlength, validationUser.email.maxMessage],
+    unique: [true, validationUser.email.uniqueMessage],
   },
   studentNumber: {
     type: String,
     validate: {
-      validator: (number) => {
+      validator: number => {
         if (number) {
           return /^[0-9]+/.test(number)
         }
         return true
       },
-      message: validation.studentNumber.validationMessage
+      message: validationUser.studentNumber.validationUserMessage,
     },
-    maxlength: [validation.studentNumber.maxlength, validation.studentNumber.maxMessage],
+    maxlength: [validationUser.studentNumber.maxlength, validationUser.studentNumber.maxMessage],
   },
 })
 
@@ -76,9 +76,9 @@ userSchema.set('toJSON', {
     delete returnedObject.__v
     delete returnedObject.passwordHash
     delete returnedObject.temporaryPassword
-  }
+  },
 })
-userSchema.plugin(uniqueValidator, { message: validation.uniqueMessage })
+userSchema.plugin(uniqueValidator, { message: validationUser.uniqueMessage })
 const User = mongoose.model('User', userSchema)
 
 module.exports = User

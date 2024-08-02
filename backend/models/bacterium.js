@@ -1,15 +1,15 @@
 const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
-const config = require('../utils/config')
-const validation = config.validation.bacterium
+const { validation } = require('../utils/config')
+const validationBacterium = validation.bacterium
 const bacteriumSchema = mongoose.Schema({
   name: {
     type: String,
-    minlength: [validation.name.minlength, validation.name.minMessage],
-    maxlength: [validation.name.maxlength, validation.name.maxMessage],
-    required: [true, validation.name.requiredMessage],
-    unique: [true, validation.name.uniqueMessage]
-  }
+    minlength: [validationBacterium.name.minlength, validationBacterium.name.minMessage],
+    maxlength: [validationBacterium.name.maxlength, validationBacterium.name.maxMessage],
+    required: [true, validationBacterium.name.requiredMessage],
+    unique: [true, validationBacterium.name.uniqueMessage],
+  },
 })
 
 bacteriumSchema.set('toJSON', {
@@ -17,9 +17,9 @@ bacteriumSchema.set('toJSON', {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
-  }
+  },
 })
-bacteriumSchema.plugin(uniqueValidator, { message: validation.name.uniqueMessage })
+bacteriumSchema.plugin(uniqueValidator, { message: validationBacterium.name.uniqueMessage })
 const Bacterium = mongoose.model('Bacterium', bacteriumSchema)
 
 module.exports = Bacterium

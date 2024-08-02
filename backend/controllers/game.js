@@ -1,15 +1,17 @@
 const gameRouter = require('express').Router()
 const Case = require('../models/case')
 const Credit = require('../models/credit')
-const config = require('../utils/config')
-const library = config.library.backend.game
+const { library } = require('../utils/config')
+const libraryGame = library.backend.game
 
 gameRouter.get('/:id', async (request, response) => {
   if (request.user) {
     try {
       let caseToGet = await Case.findById(request.params.id)
       caseToGet = caseToGet.toJSON()
-      caseToGet.samples = caseToGet.samples.map(sample => { return { description: sample.description } })
+      caseToGet.samples = caseToGet.samples.map(sample => {
+        return { description: sample.description }
+      })
       delete caseToGet.bacterium
       delete caseToGet.complete
       delete caseToGet.testGroups
@@ -55,14 +57,16 @@ gameRouter.post('/:id/checkSamples', async (request, response) => {
 gameRouter.post('/:id/checkTests', async (request, response) => {
   if (request.user) {
     try {
-      const caseToCheck = await Case.findById(request.params.id).populate('bacterium', { name: 1 }).populate({
-        path: 'testGroups.tests.test',
-        model: 'Test',
-        populate: {
-          path: 'bacteriaSpecificImages.bacterium',
-          model: 'Bacterium'
-        }
-      })
+      const caseToCheck = await Case.findById(request.params.id)
+        .populate('bacterium', { name: 1 })
+        .populate({
+          path: 'testGroups.tests.test',
+          model: 'Test',
+          populate: {
+            path: 'bacteriaSpecificImages.bacterium',
+            model: 'Bacterium',
+          },
+        })
       const testGroups = caseToCheck.testGroups
       const testsToCheck = request.body.tests
       let extraTests = []
@@ -70,7 +74,7 @@ gameRouter.post('/:id/checkTests', async (request, response) => {
       let groupIndex = 0
 
       if (!testsToCheck) {
-        return response.status(400).json({ error: library.testError })
+        return response.status(400).json({ error: libraryGame.testError })
       }
       let latestTestForCase
       for (let i = 0; i < testsToCheck.length; i++) {
@@ -78,7 +82,7 @@ gameRouter.post('/:id/checkTests', async (request, response) => {
           const newGroups = testGroups[groupIndex]
           const req = newGroups.filter(group => group.isRequired === true)
           let extra = newGroups.filter(group => group.isRequired === false)
-          extra = extra.map(e => e.tests)
+          extra = extra.map(extra => extra.tests)
           extra = [].concat.apply([], extra)
           extraTests = [...extraTests, ...extra]
           currentRequiredTests = [...currentRequiredTests, ...req.map(test => test.tests)]
@@ -90,7 +94,7 @@ gameRouter.post('/:id/checkTests', async (request, response) => {
         let requiredIndex = -1
         for (let j = 0; j < currentRequiredTests.length; j++) {
           const currentGroup = currentRequiredTests[j]
-          if (currentGroup.map(t => t.test.id).includes(testToCheck)) {
+          if (currentGroup.map(test => test.test.id).includes(testToCheck)) {
             requiredIndex = j
             break
           }
@@ -118,7 +122,7 @@ gameRouter.post('/:id/checkTests', async (request, response) => {
         const newGroups = testGroups[groupIndex]
         const req = newGroups.filter(group => group.isRequired === true)
         let extra = newGroups.filter(group => group.isRequired === false)
-        extra = extra.map(e => e.tests)
+        extra = extra.map(ext => ext.tests)
         extra = [].concat.apply([], extra)
         extraTests = [...extraTests, ...extra]
         currentRequiredTests = [...currentRequiredTests, ...req.map(test => test.tests)]
@@ -141,7 +145,9 @@ gameRouter.post('/:id/checkTests', async (request, response) => {
       }
 
       let imageUrl
-      const bacteriaSpecificImages = latestTestForCase.test.bacteriaSpecificImages.filter(bacteriaImage => bacteriaImage.bacterium.name === caseToCheck.bacterium.name)
+      const bacteriaSpecificImages = latestTestForCase.test.bacteriaSpecificImages.filter(
+        bacteriaImage => bacteriaImage.bacterium.name === caseToCheck.bacterium.name
+      )
       if (bacteriaSpecificImages.length > 0) {
         imageUrl = bacteriaSpecificImages[0].url
       } else if (latestTestForCase.positive) {
@@ -149,8 +155,9 @@ gameRouter.post('/:id/checkTests', async (request, response) => {
       } else {
         imageUrl = latestTestForCase.test.negativeResultImage.url
       }
-      return response.status(200).json({ correct: true, imageUrl, testName: latestTestForCase.test.name, allDone, requiredDone })
-
+      return response
+        .status(200)
+        .json({ correct: true, imageUrl, testName: latestTestForCase.test.name, allDone, requiredDone })
     } catch (error) {
       return response.status(400).json({ error: error.message })
     }
@@ -163,24 +170,33 @@ gameRouter.post('/:id/checkBacterium', async (request, response) => {
   if (request.user) {
     try {
       const caseToCheck = await Case.findById(request.params.id).populate('bacterium', { name: 1 })
-      if (request.body.bacteriumName && caseToCheck.bacterium.name.toLowerCase() === request.body.bacteriumName.toLowerCase()) {
+      if (
+        request.body.bacteriumName &&
+        caseToCheck.bacterium.name.toLowerCase() === request.body.bacteriumName.toLowerCase()
+      ) {
         let creditToUpdate = await Credit.findOne({ user: request.user.id })
         if (creditToUpdate) {
           if (!creditToUpdate.testCases.includes(caseToCheck.name)) {
             let newTestCases = [...creditToUpdate.testCases, caseToCheck.name]
-            await Credit.findByIdAndUpdate(creditToUpdate.id, { testCases: newTestCases }, { new: true, runValidators: true, context: 'query' })
+            await Credit.findByIdAndUpdate(
+              creditToUpdate.id,
+              { testCases: newTestCases },
+              { new: true, runValidators: true, context: 'query' }
+            )
           }
         } else {
           const newCredit = new Credit({
             user: request.user.id,
-            testCases: [
-              caseToCheck.name
-            ]
+            testCases: [caseToCheck.name],
           })
           await newCredit.save()
         }
 
-        return response.status(200).json({ correct: true, completionImageUrl: caseToCheck.completionImage.url, completionText: caseToCheck.completionText })
+        return response.status(200).json({
+          correct: true,
+          completionImageUrl: caseToCheck.completionImage.url,
+          completionText: caseToCheck.completionText,
+        })
       } else {
         return response.status(200).json({ correct: false })
       }

@@ -2,8 +2,9 @@ const testRouter = require('express').Router()
 const Test = require('../models/testCase')
 const Bacterium = require('../models/bacterium')
 const Case = require('../models/case')
-const config = require('../utils/config')
-const library = config.library.backend.testCase
+const { IMAGEURL, library } = require('../utils/config')
+const libraryTestCase = library.backend.testCase
+
 const multer = require('multer')
 const fileFilter = (req, file, cb) => {
   if (req.user && req.user.admin) {
@@ -15,31 +16,31 @@ const fileFilter = (req, file, cb) => {
   } else {
     cb(null, false)
   }
-
 }
 const storage = multer.diskStorage({
   destination: function (req, res, cb) {
-    cb(null, config.IMAGEURL)
-  }
+    cb(null, IMAGEURL)
+  },
 })
 
 const upload = multer({ storage, fileFilter })
-const imageDir = config.IMAGEURL
+const imageDir = IMAGEURL
 const fs = require('fs')
-const deleteUploadedImages = (request) => {
+const { logger } = require('../utils/logger')
+const deleteUploadedImages = request => {
   if (request.files) {
     if (request.files.controlImage) {
-      fs.unlink(`${imageDir}/${request.files.controlImage[0].filename}`, (err) => err)
+      fs.unlink(`${imageDir}/${request.files.controlImage[0].filename}`, error => error)
     }
     if (request.files.positiveResultImage) {
-      fs.unlink(`${imageDir}/${request.files.positiveResultImage[0].filename}`, (err) => err)
+      fs.unlink(`${imageDir}/${request.files.positiveResultImage[0].filename}`, error => error)
     }
     if (request.files.negativeResultImage) {
-      fs.unlink(`${imageDir}/${request.files.negativeResultImage[0].filename}`, (err) => err)
+      fs.unlink(`${imageDir}/${request.files.negativeResultImage[0].filename}`, error => error)
     }
     if (request.files.bacteriaSpecificImages) {
       for (let i = 0; i < request.files.bacteriaSpecificImages.length; i++) {
-        fs.unlink(`${imageDir}/${request.files.bacteriaSpecificImages[i].filename}`, (err) => err)
+        fs.unlink(`${imageDir}/${request.files.bacteriaSpecificImages[i].filename}`, error => error)
       }
     }
   }
@@ -49,184 +50,242 @@ testRouter.get('/', async (request, response) => {
   if (request.user && request.user.admin) {
     const tests = await Test.find({}).populate({
       path: 'bacteriaSpecificImages.bacterium',
-      model: 'Bacterium'
+      model: 'Bacterium',
     })
     response.json(tests.map(test => test.toJSON()))
   } else if (request.user) {
     let tests = await Test.find({}).populate({
       path: 'bacteriaSpecificImages.bacterium',
-      model: 'Bacterium'
+      model: 'Bacterium',
     })
-    tests = tests.map(test => test.toJSON()).map(test => { return { name: test.name, id: test.id, type: test.type, controlImage: test.controlImage } })
+    tests = tests
+      .map(test => test.toJSON())
+      .map(test => {
+        return { name: test.name, id: test.id, type: test.type, controlImage: test.controlImage }
+      })
     response.json(tests)
   } else {
     throw Error('JsonWebTokenError')
   }
 })
 
-testRouter.post('/', upload.fields([{ name: 'controlImage', maxCount: 1 }, { name: 'positiveResultImage', maxCount: 1 }, { name: 'negativeResultImage', maxCount: 1 }, { name: 'bacteriaSpecificImages', maxCount: 100 }]), async (request, response) => {
-  if (request.user && request.user.admin) {
-    try {
-      const test = new Test({
-        name: request.body.name,
-        type: request.body.type,
-        bacteriaSpecificImages: []
-      })
-      if (request.files) {
-        if (request.files.controlImage) {
-          test.controlImage = { url: request.files.controlImage[0].filename, contentType: request.files.controlImage[0].mimetype }
-        }
-        if (request.files.positiveResultImage) {
-          test.positiveResultImage = { url: request.files.positiveResultImage[0].filename, contentType: request.files.positiveResultImage[0].mimetype }
-        }
-        if (request.files.negativeResultImage) {
-          test.negativeResultImage = { url: request.files.negativeResultImage[0].filename, contentType: request.files.negativeResultImage[0].mimetype }
-        }
-        if (request.files.bacteriaSpecificImages) {
-          for (let i = 0; i < request.files.bacteriaSpecificImages.length; i++) {
-            const file = request.files.bacteriaSpecificImages[i]
-            const bacterium = await Bacterium.findOne({ name: file.originalname })
-            if (!bacterium) {
-              deleteUploadedImages(request)
-              return response.status(400).json({ error: library.bacteriumNotFound })
+testRouter.post(
+  '/',
+  upload.fields([
+    { name: 'controlImage', maxCount: 1 },
+    { name: 'positiveResultImage', maxCount: 1 },
+    { name: 'negativeResultImage', maxCount: 1 },
+    { name: 'bacteriaSpecificImages', maxCount: 100 },
+  ]),
+  async (request, response) => {
+    if (request.user && request.user.admin) {
+      try {
+        const test = new Test({
+          name: request.body.name,
+          type: request.body.type,
+          bacteriaSpecificImages: [],
+        })
+        if (request.files) {
+          if (request.files.controlImage) {
+            test.controlImage = {
+              url: request.files.controlImage[0].filename,
+              contentType: request.files.controlImage[0].mimetype,
             }
-            const imagesForBacterium = test.bacteriaSpecificImages.filter(image => image.bacterium.name === bacterium.name)
-            if (imagesForBacterium.length > 0) {
-              deleteUploadedImages(request)
-              return response.status(400).json({ error: library.singleImagePerBacterium })
+          }
+          if (request.files.positiveResultImage) {
+            test.positiveResultImage = {
+              url: request.files.positiveResultImage[0].filename,
+              contentType: request.files.positiveResultImage[0].mimetype,
             }
-            test.bacteriaSpecificImages.push({ url: file.filename, contentType: file.mimetype, bacterium })
+          }
+          if (request.files.negativeResultImage) {
+            test.negativeResultImage = {
+              url: request.files.negativeResultImage[0].filename,
+              contentType: request.files.negativeResultImage[0].mimetype,
+            }
+          }
+          if (request.files.bacteriaSpecificImages) {
+            for (let i = 0; i < request.files.bacteriaSpecificImages.length; i++) {
+              const file = request.files.bacteriaSpecificImages[i]
+              const bacterium = await Bacterium.findOne({ name: file.originalname })
+              if (!bacterium) {
+                deleteUploadedImages(request)
+                return response.status(400).json({ error: libraryTestCase.bacteriumNotFound })
+              }
+              const imagesForBacterium = test.bacteriaSpecificImages.filter(
+                image => image.bacterium.name === bacterium.name
+              )
+              if (imagesForBacterium.length > 0) {
+                deleteUploadedImages(request)
+                return response.status(400).json({ error: libraryTestCase.singleImagePerBacterium })
+              }
+              test.bacteriaSpecificImages.push({ url: file.filename, contentType: file.mimetype, bacterium })
+            }
           }
         }
-      }
-      const savedTest = await test.save()
-      return response.status(201).json(savedTest)
-    } catch (error) {
-      deleteUploadedImages(request)
-      return response.status(400).json({ error: error.message })
-    }
-  } else {
-    deleteUploadedImages(request)
-    throw Error('JsonWebTokenError')
-  }
-})
-
-testRouter.put('/:id', upload.fields([{ name: 'controlImage', maxCount: 1 }, { name: 'positiveResultImage', maxCount: 1 }, { name: 'negativeResultImage', maxCount: 1 }, { name: 'bacteriaSpecificImages', maxCount: 100 }]), async (request, response) => {
-  if (request.user && request.user.admin) {
-    try {
-      const testToEdit = await Test.findById(request.params.id).populate({
-        path: 'bacteriaSpecificImages.bacterium',
-        model: 'Bacterium'
-      })
-      if (!testToEdit) {
+        const savedTest = await test.save()
+        return response.status(201).json(savedTest)
+      } catch (error) {
         deleteUploadedImages(request)
-        return response.status(400).json({ error: library.testNotFound })
+        return response.status(400).json({ error: error.message })
       }
-      let testToUpdate = {
-        name: request.body.name,
-        type: request.body.type,
-        bacteriaSpecificImages: testToEdit.bacteriaSpecificImages,
-      }
-      const deletePhotos = { ctrl: request.body.deleteCtrl, pos: request.body.deletePos, neg: request.body.deleteNeg }
-      const oldLinks = []
+    } else {
+      deleteUploadedImages(request)
+      throw Error('JsonWebTokenError')
+    }
+  }
+)
 
-      if (deletePhotos.ctrl === 'true') {
-        oldLinks.push(testToEdit.controlImage.url)
-        testToUpdate.controlImage = null
-      }
-      if (deletePhotos.pos === 'true') {
-        oldLinks.push(testToEdit.positiveResultImage.url)
-        testToUpdate.positiveResultImage = null
-      }
-      if (deletePhotos.neg === 'true') {
-        oldLinks.push(testToEdit.negativeResultImage.url)
-        testToUpdate.negativeResultImage = null
-      }
+testRouter.put(
+  '/:id',
+  upload.fields([
+    { name: 'controlImage', maxCount: 1 },
+    { name: 'positiveResultImage', maxCount: 1 },
+    { name: 'negativeResultImage', maxCount: 1 },
+    { name: 'bacteriaSpecificImages', maxCount: 100 },
+  ]),
+  async (request, response) => {
+    if (request.user && request.user.admin) {
+      try {
+        const testToEdit = await Test.findById(request.params.id).populate({
+          path: 'bacteriaSpecificImages.bacterium',
+          model: 'Bacterium',
+        })
+        if (!testToEdit) {
+          deleteUploadedImages(request)
+          return response.status(400).json({ error: libraryTestCase.testNotFound })
+        }
+        let testToUpdate = {
+          name: request.body.name,
+          type: request.body.type,
+          bacteriaSpecificImages: testToEdit.bacteriaSpecificImages,
+        }
+        const deletePhotos = { ctrl: request.body.deleteCtrl, pos: request.body.deletePos, neg: request.body.deleteNeg }
+        const oldLinks = []
 
-      if (request.files) {
-        if (request.files.controlImage) {
+        if (deletePhotos.ctrl === 'true') {
           oldLinks.push(testToEdit.controlImage.url)
-          testToUpdate.controlImage = { url: request.files.controlImage[0].filename, contentType: request.files.controlImage[0].mimetype }
+          testToUpdate.controlImage = null
         }
-        if (request.files.positiveResultImage) {
+        if (deletePhotos.pos === 'true') {
           oldLinks.push(testToEdit.positiveResultImage.url)
-          testToUpdate.positiveResultImage = { url: request.files.positiveResultImage[0].filename, contentType: request.files.positiveResultImage[0].mimetype }
+          testToUpdate.positiveResultImage = null
         }
-        if (request.files.negativeResultImage) {
+        if (deletePhotos.neg === 'true') {
           oldLinks.push(testToEdit.negativeResultImage.url)
-          testToUpdate.negativeResultImage = { url: request.files.negativeResultImage[0].filename, contentType: request.files.negativeResultImage[0].mimetype }
+          testToUpdate.negativeResultImage = null
         }
-        if (request.files.bacteriaSpecificImages) {
-          for (let i = 0; i < request.files.bacteriaSpecificImages.length; i++) {
-            const file = request.files.bacteriaSpecificImages[i]
-            const bacterium = await Bacterium.findOne({ name: file.originalname })
-            if (!bacterium) {
-              deleteUploadedImages(request)
-              return response.status(400).json({ error: library.bacteriumNotFound })
-            }
-            const imageToDelete = testToUpdate.bacteriaSpecificImages.filter(image => image.bacterium.name === bacterium.name)
-            if (imageToDelete.length > 0) {
-              oldLinks.push(imageToDelete[0].url)
-              testToUpdate.bacteriaSpecificImages = testToUpdate.bacteriaSpecificImages.map(image => image.bacterium.name === bacterium.name ? { url: file.filename, contentType: file.mimetype, bacterium } : image)
-            } else {
-              testToUpdate.bacteriaSpecificImages.push({ url: file.filename, contentType: file.mimetype, bacterium })
+
+        if (request.files) {
+          if (request.files.controlImage) {
+            oldLinks.push(testToEdit.controlImage.url)
+            testToUpdate.controlImage = {
+              url: request.files.controlImage[0].filename,
+              contentType: request.files.controlImage[0].mimetype,
             }
           }
-        }
-      }
-
-      if (request.body.deleteSpecifics) {
-        const deleteSpecifics = JSON.parse(request.body.deleteSpecifics)
-        if (deleteSpecifics && deleteSpecifics.length > 0) {
-          for (let img of deleteSpecifics) {
-            for (let i = 0; i < testToUpdate.bacteriaSpecificImages.length; i++) {
-              if (testToUpdate.bacteriaSpecificImages[i] && testToUpdate.bacteriaSpecificImages[i].bacterium && img === testToUpdate.bacteriaSpecificImages[i].bacterium.name) {
-                oldLinks.push(testToUpdate.bacteriaSpecificImages[i].url)
-                testToUpdate.bacteriaSpecificImages[i] = null
+          if (request.files.positiveResultImage) {
+            oldLinks.push(testToEdit.positiveResultImage.url)
+            testToUpdate.positiveResultImage = {
+              url: request.files.positiveResultImage[0].filename,
+              contentType: request.files.positiveResultImage[0].mimetype,
+            }
+          }
+          if (request.files.negativeResultImage) {
+            oldLinks.push(testToEdit.negativeResultImage.url)
+            testToUpdate.negativeResultImage = {
+              url: request.files.negativeResultImage[0].filename,
+              contentType: request.files.negativeResultImage[0].mimetype,
+            }
+          }
+          if (request.files.bacteriaSpecificImages) {
+            for (let i = 0; i < request.files.bacteriaSpecificImages.length; i++) {
+              const file = request.files.bacteriaSpecificImages[i]
+              const bacterium = await Bacterium.findOne({ name: file.originalname })
+              if (!bacterium) {
+                deleteUploadedImages(request)
+                return response.status(400).json({ error: libraryTestCase.bacteriumNotFound })
+              }
+              const imageToDelete = testToUpdate.bacteriaSpecificImages.filter(
+                image => image.bacterium.name === bacterium.name
+              )
+              if (imageToDelete.length > 0) {
+                oldLinks.push(imageToDelete[0].url)
+                testToUpdate.bacteriaSpecificImages = testToUpdate.bacteriaSpecificImages.map(image =>
+                  image.bacterium.name === bacterium.name
+                    ? { url: file.filename, contentType: file.mimetype, bacterium }
+                    : image
+                )
+              } else {
+                testToUpdate.bacteriaSpecificImages.push({ url: file.filename, contentType: file.mimetype, bacterium })
               }
             }
           }
-          testToUpdate.bacteriaSpecificImages = testToUpdate.bacteriaSpecificImages.filter(img => img !== null)
         }
-      }
-      const updatetTest = await Test.findByIdAndUpdate(request.params.id, testToUpdate, { new: true, runValidators: true, context: 'query' }).populate({
-        path: 'bacteriaSpecificImages.bacterium',
-        model: 'Bacterium'
-      })
-      for (let i = 0; i < oldLinks.length; i++) {
-        fs.unlink(`${imageDir}/${oldLinks[i]}`, (err) => err)
-      }
 
-      return response.status(200).json(updatetTest)
-    } catch (error) {
+        if (request.body.deleteSpecifics) {
+          const deleteSpecifics = JSON.parse(request.body.deleteSpecifics)
+          if (deleteSpecifics && deleteSpecifics.length > 0) {
+            for (let img of deleteSpecifics) {
+              for (let i = 0; i < testToUpdate.bacteriaSpecificImages.length; i++) {
+                if (
+                  testToUpdate.bacteriaSpecificImages[i] &&
+                  testToUpdate.bacteriaSpecificImages[i].bacterium &&
+                  img === testToUpdate.bacteriaSpecificImages[i].bacterium.name
+                ) {
+                  oldLinks.push(testToUpdate.bacteriaSpecificImages[i].url)
+                  testToUpdate.bacteriaSpecificImages[i] = null
+                }
+              }
+            }
+            testToUpdate.bacteriaSpecificImages = testToUpdate.bacteriaSpecificImages.filter(img => img !== null)
+          }
+        }
+        const updatetTest = await Test.findByIdAndUpdate(request.params.id, testToUpdate, {
+          new: true,
+          runValidators: true,
+          context: 'query',
+        }).populate({
+          path: 'bacteriaSpecificImages.bacterium',
+          model: 'Bacterium',
+        })
+        for (let i = 0; i < oldLinks.length; i++) {
+          fs.unlink(`${imageDir}/${oldLinks[i]}`, error => error)
+        }
+
+        return response.status(200).json(updatetTest)
+      } catch (error) {
+        deleteUploadedImages(request)
+        return response.status(400).json({ error: error.message })
+      }
+    } else {
       deleteUploadedImages(request)
-      return response.status(400).json({ error: error.message })
+      throw Error('JsonWebTokenError')
     }
-  } else {
-    deleteUploadedImages(request)
-    throw Error('JsonWebTokenError')
   }
-})
+)
 
 testRouter.delete('/:id', async (request, response) => {
   if (request.user && request.user.admin) {
     try {
       const testToDelete = await Test.findById(request.params.id).populate({
         path: 'bacteriaSpecificImages.bacterium',
-        model: 'Bacterium'
+        model: 'Bacterium',
       })
 
-      const cases = await Case.find({}).populate({
-        path: 'testGroups.tests.test',
-        model: 'Test',
-        populate: {
-          path: 'bacteriaSpecificImages.bacterium',
-          model: 'Bacterium'
-        }
-      }).populate({
-        path: 'hints.test',
-        model: 'Test'
-      })
+      const cases = await Case.find({})
+        .populate({
+          path: 'testGroups.tests.test',
+          model: 'Test',
+          populate: {
+            path: 'bacteriaSpecificImages.bacterium',
+            model: 'Bacterium',
+          },
+        })
+        .populate({
+          path: 'hints.test',
+          model: 'Test',
+        })
       let testIsInUse = false
       cases.forEach(element => {
         for (let i = 0; i < element.testGroups.length; i++) {
@@ -247,15 +306,15 @@ testRouter.delete('/:id', async (request, response) => {
         }
       })
       if (testIsInUse) {
-        return response.status(400).json({ error: library.usedInCase })
+        return response.status(400).json({ error: libraryTestCase.usedInCase })
       }
-      fs.unlink(`${imageDir}/${testToDelete.controlImage.url}`, (err) => err)
-      fs.unlink(`${imageDir}/${testToDelete.positiveResultImage.url}`, (err) => err)
-      fs.unlink(`${imageDir}/${testToDelete.negativeResultImage.url}`, (err) => err)
+      fs.unlink(`${imageDir}/${testToDelete.controlImage.url}`, error => error)
+      fs.unlink(`${imageDir}/${testToDelete.positiveResultImage.url}`, error => error)
+      fs.unlink(`${imageDir}/${testToDelete.negativeResultImage.url}`, error => error)
       for (let i = 0; i < testToDelete.bacteriaSpecificImages.length; i++) {
-        fs.unlink(`${imageDir}/${testToDelete.bacteriaSpecificImages[i].url}`, (err) => {
-          if (err) {
-            console.error(err)
+        fs.unlink(`${imageDir}/${testToDelete.bacteriaSpecificImages[i].url}`, error => {
+          if (error) {
+            logger.error(error)
             return
           }
         })
@@ -263,7 +322,7 @@ testRouter.delete('/:id', async (request, response) => {
       await Test.findByIdAndRemove(request.params.id)
       return response.status(204).end()
     } catch (error) {
-      return response.status(400).json({ error: library.testNotFound })
+      return response.status(400).json({ error: libraryTestCase.testNotFound })
     }
   } else {
     throw Error('JsonWebTokenError')

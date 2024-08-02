@@ -2,13 +2,13 @@ const mongoose = require('mongoose')
 const creditSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
   },
   testCases: [
     {
-      type: String
-    }
-  ]
+      type: String,
+    },
+  ],
 })
 
 creditSchema.set('toJSON', {
@@ -16,7 +16,7 @@ creditSchema.set('toJSON', {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
-  }
+  },
 })
 
 const Credit = mongoose.model('Credit', creditSchema)

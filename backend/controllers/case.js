@@ -2,18 +2,24 @@ const caseRouter = require('express').Router()
 const Case = require('../models/case')
 const Bacterium = require('../models/bacterium')
 const Test = require('../models/testCase')
-const config = require('../utils/config')
-const library = config.library.backend.case
-const validation = config.validation.case
+const { library, validation, IMAGEURL } = require('../utils/config')
+const libraryCase = library.backend.case
+const validationCase = validation.case
 
-const isCompletionDone = (caseToCheck) => {
+const isCompletionDone = caseToCheck => {
   if ((caseToCheck.completionImage && caseToCheck.completionImage.url) || caseToCheck.completionText) {
     return true
   }
   return false
 }
-const isComplete = (caseToCheck) => {
-  if (caseToCheck.bacterium && caseToCheck.anamnesis && isCompletionDone(caseToCheck) && caseToCheck.samples.filter(sample => sample.rightAnswer).length === 1 && caseToCheck.testGroups) {
+const isComplete = caseToCheck => {
+  if (
+    caseToCheck.bacterium &&
+    caseToCheck.anamnesis &&
+    isCompletionDone(caseToCheck) &&
+    caseToCheck.samples.filter(sample => sample.rightAnswer).length === 1 &&
+    caseToCheck.testGroups
+  ) {
     return true
   }
   return false
@@ -32,35 +38,45 @@ const fileFilter = (req, file, cb) => {
 }
 const storage = multer.diskStorage({
   destination: function (req, res, cb) {
-    cb(null, config.IMAGEURL)
-  }
+    cb(null, IMAGEURL)
+  },
 })
 const upload = multer({ storage, fileFilter })
-const imageDir = config.IMAGEURL
+const imageDir = IMAGEURL
 const fs = require('fs')
-const deleteUploadedImages = (request) => {
+const deleteUploadedImages = request => {
   if (request.files && request.files.completionImage) {
-    fs.unlink(`${imageDir}/${request.files.completionImage[0].filename}`, (err) => err)
+    fs.unlink(`${imageDir}/${request.files.completionImage[0].filename}`, error => error)
   }
 }
 
 caseRouter.get('/', async (request, response) => {
   if (request.user && request.user.admin) {
-    const cases = await Case.find({}).populate('bacterium', { name: 1 }).populate({
-      path: 'testGroups.tests.test',
-      model: 'Test',
-      populate: {
-        path: 'bacteriaSpecificImages.bacterium',
-        model: 'Bacterium'
-      }
-    }).populate({
-      path: 'hints.test',
-      model: 'Test'
-    })
+    const cases = await Case.find({})
+      .populate('bacterium', { name: 1 })
+      .populate({
+        path: 'testGroups.tests.test',
+        model: 'Test',
+        populate: {
+          path: 'bacteriaSpecificImages.bacterium',
+          model: 'Bacterium',
+        },
+      })
+      .populate({
+        path: 'hints.test',
+        model: 'Test',
+      })
     response.json(cases.map(caseToMap => caseToMap.toJSON()))
   } else if (request.user) {
     const cases = await Case.find({})
-    response.json(cases.map(caseToMap => caseToMap.toJSON()).filter(caseToFilter => caseToFilter.complete).map(caseToMap => { return { name: caseToMap.name, id: caseToMap.id } }))
+    response.json(
+      cases
+        .map(caseToMap => caseToMap.toJSON())
+        .filter(caseToFilter => caseToFilter.complete)
+        .map(caseToMap => {
+          return { name: caseToMap.name, id: caseToMap.id }
+        })
+    )
   } else {
     throw Error('JsonWebTokenError')
   }
@@ -76,13 +92,13 @@ caseRouter.post('/', upload.fields([{ name: 'completionImage', maxCount: 1 }]), 
         let bacterium
         try {
           bacterium = await Bacterium.findById(request.body.bacterium)
-        } catch (e) {
+        } catch (error) {
           deleteUploadedImages(request)
-          return response.status(400).json({ error: library.bacteriumNotFound })
+          return response.status(400).json({ error: libraryCase.bacteriumNotFound })
         }
         if (!bacterium) {
           deleteUploadedImages(request)
-          return response.status(400).json({ error: library.bacteriumNotFound })
+          return response.status(400).json({ error: libraryCase.bacteriumNotFound })
         }
         newCase.bacterium = bacterium
       }
@@ -93,7 +109,10 @@ caseRouter.post('/', upload.fields([{ name: 'completionImage', maxCount: 1 }]), 
         newCase.completionText = request.body.completionText
       }
       if (request.files && request.files.completionImage) {
-        newCase.completionImage = { url: request.files.completionImage[0].filename, contentType: request.files.completionImage[0].mimetype }
+        newCase.completionImage = {
+          url: request.files.completionImage[0].filename,
+          contentType: request.files.completionImage[0].mimetype,
+        }
       }
       if (request.body.samples) {
         newCase.samples = JSON.parse(request.body.samples)
@@ -102,14 +121,16 @@ caseRouter.post('/', upload.fields([{ name: 'completionImage', maxCount: 1 }]), 
         for (let i = 0; i < descList.length; i++) {
           if (checkedDescList.includes(descList[i])) {
             deleteUploadedImages(request)
-            return response.status(400).json({ error: `${validation.samples.description.uniqueStart}${descList[i]}${validation.samples.description.uniqueEnd}` })
+            return response.status(400).json({
+              error: `${validationCase.samples.description.uniqueStart}${descList[i]}${validationCase.samples.description.uniqueEnd}`,
+            })
           } else {
             checkedDescList.push(descList[i])
           }
         }
         if (newCase.samples.filter(sample => sample.rightAnswer).length > 1) {
           deleteUploadedImages(request)
-          return response.status(400).json({ error: validation.samples.rightAnswer.onlyOneRight })
+          return response.status(400).json({ error: validationCase.samples.rightAnswer.onlyOneRight })
         }
       }
       if (request.body.testGroups) {
@@ -126,17 +147,19 @@ caseRouter.post('/', upload.fields([{ name: 'completionImage', maxCount: 1 }]), 
               let testFromDb
               try {
                 testFromDb = await Test.findById(testForAlternativeTests.testId)
-              } catch (e) {
+              } catch (error) {
                 deleteUploadedImages(request)
-                return response.status(400).json({ error: library.testNotFound })
+                return response.status(400).json({ error: libraryCase.testNotFound })
               }
               if (!testFromDb) {
                 deleteUploadedImages(request)
-                return response.status(400).json({ error: library.testNotFound })
+                return response.status(400).json({ error: libraryCase.testNotFound })
               } else {
                 if (addedTestIds.includes(testFromDb.id)) {
                   deleteUploadedImages(request)
-                  return response.status(400).json({ error: `${validation.test.uniqueStart}${testFromDb.name}${validation.test.uniqueEnd}` })
+                  return response.status(400).json({
+                    error: `${validationCase.test.uniqueStart}${testFromDb.name}${validationCase.test.uniqueEnd}`,
+                  })
                 }
                 addedTestIds.push(testFromDb.id)
                 testsFromDb.push({ test: testFromDb, positive: testForAlternativeTests.positive })
@@ -144,7 +167,7 @@ caseRouter.post('/', upload.fields([{ name: 'completionImage', maxCount: 1 }]), 
             }
             const testForCaseToAdd = {
               tests: testsFromDb,
-              isRequired: testForCase.isRequired
+              isRequired: testForCase.isRequired,
             }
             newTestGroup.push(testForCaseToAdd)
           }
@@ -173,7 +196,7 @@ caseRouter.delete('/:id', async (request, response) => {
   if (request.user && request.user.admin) {
     try {
       const caseToDelete = await Case.findById(request.params.id)
-      fs.unlink(`${imageDir}/${caseToDelete.completionImage.url}`, (err) => err)
+      fs.unlink(`${imageDir}/${caseToDelete.completionImage.url}`, error => error)
       await Case.findByIdAndRemove(request.params.id)
       response.status(204).end()
     } catch (error) {
@@ -192,22 +215,22 @@ caseRouter.put('/:id', upload.fields([{ name: 'completionImage', maxCount: 1 }])
       const caseToUpdate = await Case.findById(request.params.id)
       if (!caseToUpdate) {
         deleteUploadedImages(request)
-        return response.status(400).json({ error: library.caseNotFound })
+        return response.status(400).json({ error: libraryCase.caseNotFound })
       }
       let changes = {
-        name: request.body.name
+        name: request.body.name,
       }
       if (request.body.bacterium) {
         let bacterium
         try {
           bacterium = await Bacterium.findById(request.body.bacterium)
-        } catch (e) {
+        } catch (error) {
           deleteUploadedImages(request)
-          return response.status(400).json({ error: library.bacteriumNotFound })
+          return response.status(400).json({ error: libraryCase.bacteriumNotFound })
         }
         if (!bacterium) {
           deleteUploadedImages(request)
-          return response.status(400).json({ error: library.bacteriumNotFound })
+          return response.status(400).json({ error: libraryCase.bacteriumNotFound })
         }
         changes.bacterium = bacterium
       }
@@ -223,7 +246,10 @@ caseRouter.put('/:id', upload.fields([{ name: 'completionImage', maxCount: 1 }])
       }
       if (request.files && request.files.completionImage) {
         oldLinks.push(caseToUpdate.completionImage.url)
-        changes.completionImage = { url: request.files.completionImage[0].filename, contentType: request.files.completionImage[0].mimetype }
+        changes.completionImage = {
+          url: request.files.completionImage[0].filename,
+          contentType: request.files.completionImage[0].mimetype,
+        }
       }
       if (request.body.samples) {
         changes.samples = JSON.parse(request.body.samples)
@@ -232,14 +258,16 @@ caseRouter.put('/:id', upload.fields([{ name: 'completionImage', maxCount: 1 }])
         for (let i = 0; i < descList.length; i++) {
           if (checkedDescList.includes(descList[i])) {
             deleteUploadedImages(request)
-            return response.status(400).json({ error: `${validation.samples.description.uniqueStart}${descList[i]}${validation.samples.description.uniqueEnd}` })
+            return response.status(400).json({
+              error: `${validationCase.samples.description.uniqueStart}${descList[i]}${validationCase.samples.description.uniqueEnd}`,
+            })
           } else {
             checkedDescList.push(descList[i])
           }
         }
         if (changes.samples.filter(sample => sample.rightAnswer).length > 1) {
           deleteUploadedImages(request)
-          return response.status(400).json({ error: validation.samples.rightAnswer.onlyOneRight })
+          return response.status(400).json({ error: validationCase.samples.rightAnswer.onlyOneRight })
         }
       }
       if (request.body.testGroups) {
@@ -256,17 +284,19 @@ caseRouter.put('/:id', upload.fields([{ name: 'completionImage', maxCount: 1 }])
               let testFromDb
               try {
                 testFromDb = await Test.findById(testForAlternativeTests.testId)
-              } catch (e) {
+              } catch (error) {
                 deleteUploadedImages(request)
-                return response.status(400).json({ error: library.testNotFound })
+                return response.status(400).json({ error: libraryCase.testNotFound })
               }
               if (!testFromDb) {
                 deleteUploadedImages(request)
-                return response.status(400).json({ error: library.testNotFound })
+                return response.status(400).json({ error: libraryCase.testNotFound })
               } else {
                 if (addedTestIds.includes(testFromDb.id)) {
                   deleteUploadedImages(request)
-                  return response.status(400).json({ error: `${validation.test.uniqueStart}${testFromDb.name}${validation.test.uniqueEnd}` })
+                  return response.status(400).json({
+                    error: `${validationCase.test.uniqueStart}${testFromDb.name}${validationCase.test.uniqueEnd}`,
+                  })
                 }
                 addedTestIds.push(testFromDb.id)
                 testsFromDb.push({ test: testFromDb, positive: testForAlternativeTests.positive })
@@ -274,7 +304,7 @@ caseRouter.put('/:id', upload.fields([{ name: 'completionImage', maxCount: 1 }])
             }
             const testForCaseToAdd = {
               tests: testsFromDb,
-              isRequired: testForCase.isRequired
+              isRequired: testForCase.isRequired,
             }
             newTestGroup.push(testForCaseToAdd)
           }
@@ -283,22 +313,33 @@ caseRouter.put('/:id', upload.fields([{ name: 'completionImage', maxCount: 1 }])
         changes.testGroups = testGroups
       }
       changes.complete = isComplete(changes)
-      let updatedCase = await Case.findByIdAndUpdate(request.params.id, changes, { new: true, runValidators: true, context: 'query' })
-      let completeChange = { complete: isComplete(updatedCase) }
-      updatedCase = await Case.findByIdAndUpdate(request.params.id, completeChange, { new: true, runValidators: true, context: 'query' })
-      updatedCase = await Case.findById(request.params.id).populate('bacterium', { name: 1 }).populate({
-        path: 'testGroups.tests.test',
-        model: 'Test',
-        populate: {
-          path: 'bacteriaSpecificImages.bacterium',
-          model: 'Bacterium'
-        }
-      }).populate({
-        path: 'hints.test',
-        model: 'Test'
+      let updatedCase = await Case.findByIdAndUpdate(request.params.id, changes, {
+        new: true,
+        runValidators: true,
+        context: 'query',
       })
+      let completeChange = { complete: isComplete(updatedCase) }
+      updatedCase = await Case.findByIdAndUpdate(request.params.id, completeChange, {
+        new: true,
+        runValidators: true,
+        context: 'query',
+      })
+      updatedCase = await Case.findById(request.params.id)
+        .populate('bacterium', { name: 1 })
+        .populate({
+          path: 'testGroups.tests.test',
+          model: 'Test',
+          populate: {
+            path: 'bacteriaSpecificImages.bacterium',
+            model: 'Bacterium',
+          },
+        })
+        .populate({
+          path: 'hints.test',
+          model: 'Test',
+        })
       for (let i = 0; i < oldLinks.length; i++) {
-        fs.unlink(`${imageDir}/${oldLinks[i]}`, (err) => err)
+        fs.unlink(`${imageDir}/${oldLinks[i]}`, error => error)
       }
       return response.status(200).json(updatedCase)
     } catch (error) {
@@ -311,13 +352,12 @@ caseRouter.put('/:id', upload.fields([{ name: 'completionImage', maxCount: 1 }])
   }
 })
 
-
 caseRouter.put('/:id/hints', async (request, response) => {
   if (request.user && request.user.admin) {
     try {
       const caseToUpdate = await Case.findById(request.params.id)
       if (!caseToUpdate) {
-        return response.status(400).json({ error: library.caseNotFound })
+        return response.status(400).json({ error: libraryCase.caseNotFound })
       }
       const hints = request.body
       let testsWithHints = []
@@ -329,29 +369,36 @@ caseRouter.put('/:id/hints', async (request, response) => {
         let testFromDb
         try {
           testFromDb = await Test.findById(hints[i].test)
-        } catch (e) {
-          return response.status(400).json({ error: library.testNotFound })
+        } catch (error) {
+          return response.status(400).json({ error: libraryCase.testNotFound })
         }
         if (!testFromDb) {
-          return response.status(400).json({ error: library.testNotFound })
+          return response.status(400).json({ error: libraryCase.testNotFound })
         }
         testsWithHints.push(hints[i].test)
       }
       if (hasMoreThanOneSame) {
-        return response.status(400).json({ error: validation.hints.hint.uniqueMessage })
+        return response.status(400).json({ error: validationCase.hints.hint.uniqueMessage })
       }
-      let updatedCase = await Case.findByIdAndUpdate(request.params.id, { hints }, { new: true, runValidators: true, context: 'query' })
-      updatedCase = await Case.findById(request.params.id).populate('bacterium', { name: 1 }).populate({
-        path: 'testGroups.tests.test',
-        model: 'Test',
-        populate: {
-          path: 'bacteriaSpecificImages.bacterium',
-          model: 'Bacterium'
-        }
-      }).populate({
-        path: 'hints.test',
-        model: 'Test'
-      })
+      let updatedCase = await Case.findByIdAndUpdate(
+        request.params.id,
+        { hints },
+        { new: true, runValidators: true, context: 'query' }
+      )
+      updatedCase = await Case.findById(request.params.id)
+        .populate('bacterium', { name: 1 })
+        .populate({
+          path: 'testGroups.tests.test',
+          model: 'Test',
+          populate: {
+            path: 'bacteriaSpecificImages.bacterium',
+            model: 'Bacterium',
+          },
+        })
+        .populate({
+          path: 'hints.test',
+          model: 'Test',
+        })
       return response.status(200).json(updatedCase)
     } catch (error) {
       return response.status(400).json({ error: error.message })
