@@ -12,19 +12,19 @@ const validation = require('./../lib/validation.json')
 const library = require('./../lib/library.json')
 let MONGODB_URI
 if (process.env.NODE_ENV === 'production') {
-    MONGODB_URI = process.env.MONGODB_URI
+  MONGODB_URI = process.env.MONGODB_URI
 }
 
 module.exports = {
-    SECRET,
-    PORT,
-    MONGODB_URI,
-    IMAGEURL,
-    EMAILHOST,
-    EMAILUSER,
-    EMAILPASSWORD,
-    EMAILPORT,
-    EMAILPROXY,
-    validation,
-    library
+  SECRET,
+  PORT,
+  MONGODB_URI,
+  IMAGEURL,
+  EMAILHOST,
+  EMAILUSER,
+  EMAILPASSWORD,
+  EMAILPORT,
+  EMAILPROXY,
+  validation,
+  library
 }
