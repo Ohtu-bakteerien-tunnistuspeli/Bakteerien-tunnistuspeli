@@ -1,4 +1,4 @@
-const { test, beforeEach, before, describe, after } = require('node:test')
+const { test, beforeEach, describe, after } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
@@ -63,9 +63,9 @@ const initialTests = [
   },
 ]
 
-const initialBacteriumForCase = new Bacterium({
+const initialBacteriumForCase = {
   name: 'testBacterium',
-})
+}
 
 const initialSamples = [
   {
@@ -78,19 +78,36 @@ const initialSamples = [
   },
 ]
 
-let adminUserToken // For easy access to token
-let testMap = {} // For easy access to IDs
-let addedCaseId // For easy access to case information
-let addedTests
-let initialBacterium
+const getListOfAddedTests = async () => {
+  let addedTests = []
+  const names = ['test0', 'test1', 'test2', 'test3', 'test4']
+  for (let i = 0; i < 5; i++) {
+    addedTests.push(await Test.findOne({ name: names[i] }))
+  }
+  return addedTests
+}
 
-before(async () => {
-  await Credit.deleteMany({})
-  await Bacterium.deleteMany({})
-  await User.deleteMany({})
-  await Test.deleteMany({})
-  await Case.deleteMany({})
-})
+const findCaseId = async () => {
+  const addedCase = await Case.findOne({ name: 'Test case' })
+  return addedCase._id
+}
+
+const getLoggedInAdmin = async () => {
+  const user = await api.post('/api/user/login').send({
+    username: 'adminNew',
+    password: 'admin',
+  })
+  return user
+}
+const getTests = async () => {
+  const user = await getLoggedInAdmin()
+  let testMap = {}
+  const testsInDB = await api.get('/api/test').set('Authorization', `bearer ${user.body.token}`)
+  for (let i = 0; i < testsInDB.body.length; i++) {
+    testMap[testsInDB.body[i].name] = testsInDB.body[i].id
+  }
+  return testMap
+}
 
 beforeEach(async () => {
   // Clean db
@@ -103,24 +120,13 @@ beforeEach(async () => {
   const adminPassword = await bcrypt.hash('admin', 10)
   const admin = new User({ username: 'adminNew', passwordHash: adminPassword, admin: true, email: 'example333333@com' })
   await admin.save()
-  // Get admin token
-  const loginRes = await api.post('/api/user/login').send({
-    username: 'adminNew',
-    password: 'admin',
-  })
-  adminUserToken = loginRes.body.token
-  // Add all tests
-  addedTests = initialTests.map(test => new Test(test))
+
+  const addedTests = initialTests.map(test => new Test(test))
   await Test.insertMany(addedTests)
   // Create name -> id map of tests
-  testMap = {}
-  const testsInDB = await api.get('/api/test').set('Authorization', `bearer ${adminUserToken}`)
-  for (let i = 0; i < testsInDB.body.length; i++) {
-    testMap[testsInDB.body[i].name] = testsInDB.body[i].id
-  }
+
   // Add initial bacterium
-  initialBacterium = new Bacterium(initialBacteriumForCase)
-  initialBacterium.save()
+  const initialBacterium = await new Bacterium(initialBacteriumForCase).save()
   // Add initial case
   const caseToAdd = new Case({
     name: 'Test case',
@@ -185,22 +191,25 @@ beforeEach(async () => {
       },
     ],
   })
-  addedCaseId = await caseToAdd.save()
-  addedCaseId = addedCaseId._id
+  await caseToAdd.save()
 })
 
 describe('it is possible to do tests', () => {
   test('admin can do tests', async () => {
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
+    const addedCaseId = await findCaseId()
     const data = [testMap['test0']]
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, true)
   })
 
   test('normal user can do tests', async () => {
+    const testMap = await getTests()
     const adminPassword = await bcrypt.hash('user', 10)
     const admin = new User({
       username: 'userNew',
@@ -215,6 +224,7 @@ describe('it is possible to do tests', () => {
     })
 
     const data = [testMap['test0']]
+    const addedCaseId = await findCaseId()
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
       .set('Authorization', `bearer ${loginRes.body.token}`)
@@ -224,30 +234,39 @@ describe('it is possible to do tests', () => {
   })
 
   test('correct first required test can be done', async () => {
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
+    const addedCaseId = await findCaseId()
     const data = [testMap['test0']]
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, true)
   })
 
   test('correct first extra test can be done', async () => {
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
     const data = [testMap['test2']]
+    const addedCaseId = await findCaseId()
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, true)
   })
 
   test('required tests cannot be done too early', async () => {
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
     const data = [testMap['test3']]
+    const addedCaseId = await findCaseId()
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, false)
@@ -255,10 +274,13 @@ describe('it is possible to do tests', () => {
   })
 
   test('test with hint returns it when the test is wrong answer', async () => {
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
     const data = [testMap['test9']]
+    const addedCaseId = await findCaseId()
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, false)
@@ -266,26 +288,39 @@ describe('it is possible to do tests', () => {
   })
 
   test('extra tests cannot be done too early', async () => {
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
     const data = [testMap['test4']]
+    const addedCaseId = await findCaseId()
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, false)
   })
 
   test('incorrect tests cannot be done', async () => {
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
     const data = [testMap['test11']]
+    const addedCaseId = await findCaseId()
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, false)
   })
 
   test('test group that only contains extra tests is not required', async () => {
+    const addedTests = await getListOfAddedTests()
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
+    const initialBacterium = await new Bacterium({
+      name: 'koli 2',
+    }).save()
+
     const caseToAdd = new Case({
       name: 'Test case2',
       anamnesis: 'Test case2',
@@ -324,13 +359,17 @@ describe('it is possible to do tests', () => {
     const data = [testMap['test3'], testMap['test4']]
     let res = await api
       .post(`/api/game/${testCaseAdded.id}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, true)
   })
 
   test('last test group that only contains extra tests is not required', async () => {
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
+    const addedTests = await getListOfAddedTests()
+    const initialBacterium = await new Bacterium({ name: 'koli 3' }).save()
     const caseToAdd = new Case({
       name: 'Test case3',
       anamnesis: 'Test case3',
@@ -356,9 +395,10 @@ describe('it is possible to do tests', () => {
     const testCaseAdded = await caseToAdd.save()
 
     const data = [testMap['test0']]
+    console.log(addedTests, data)
     let res = await api
       .post(`/api/game/${testCaseAdded.id}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, true)
@@ -367,6 +407,9 @@ describe('it is possible to do tests', () => {
   })
 
   test('empty list can be posted to check if case can be completed without testing', async () => {
+    const addedTests = getListOfAddedTests()
+    const user = await getLoggedInAdmin()
+    const initialBacterium = await new Bacterium({ name: 'koli 4' }).save()
     const caseToAdd = new Case({
       name: 'Test case3',
       anamnesis: 'Test case3',
@@ -394,7 +437,7 @@ describe('it is possible to do tests', () => {
     const data = []
     const res = await api
       .post(`/api/game/${testCaseAdded.id}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.requiredDone, true)
@@ -404,30 +447,39 @@ describe('it is possible to do tests', () => {
 
 describe('it is possible to do multiple tests', () => {
   test('user can do tests from second group after completing all required tests from the first one', async () => {
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
     const data = [testMap['test0'], testMap['test3']]
+    const addedCaseId = await findCaseId()
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, true)
   })
 
   test('alternative required test can be done as extra', async () => {
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
     const data = [testMap['test0'], testMap['test1']]
+    const addedCaseId = await findCaseId()
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, true)
   })
 
   test('only required tests are required for completion', async () => {
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
     const data = [testMap['test0'], testMap['test3'], testMap['test5'], testMap['test7'], testMap['test9']]
+    const addedCaseId = await findCaseId()
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, true)
@@ -436,10 +488,13 @@ describe('it is possible to do multiple tests', () => {
   })
 
   test('allDone is false if not all tests are done', async () => {
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
     const data = [testMap['test0'], testMap['test3'], testMap['test5'], testMap['test7'], testMap['test9']]
+    const addedCaseId = await findCaseId()
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, true)
@@ -447,6 +502,8 @@ describe('it is possible to do multiple tests', () => {
   })
 
   test('allDone is true if all tests are done', async () => {
+    const testMap = await getTests()
+    const user = await getLoggedInAdmin()
     const data = [
       testMap['test0'],
       testMap['test1'],
@@ -459,9 +516,10 @@ describe('it is possible to do multiple tests', () => {
       testMap['test8'],
       testMap['test9'],
     ]
+    const addedCaseId = await findCaseId()
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .send({ tests: data })
       .expect(200)
     assert.strictEqual(res.body.correct, true)
@@ -472,9 +530,14 @@ describe('it is possible to do multiple tests', () => {
 
 describe('correct errors are given', () => {
   test('when no list is posted', async () => {
+    const user = await api.post('/api/user/login').send({
+      username: 'adminNew',
+      password: 'admin',
+    })
+    const addedCaseId = await findCaseId()
     const res = await api
       .post(`/api/game/${addedCaseId}/checkTests`)
-      .set('Authorization', `bearer ${adminUserToken}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .expect(400)
     assert.match(res.body.error, /Testin lähettämisessä tapahtui virhe./)
   })
