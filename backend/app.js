@@ -15,7 +15,6 @@ if (
   app.use('/api/testing', testingRouter)
 }
 if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
-  logger.info('HEEEEEEEEEEEEEEEEREEEEEEEEee')
   const { MongoMemoryServer } = require('mongodb-memory-server')
   const mongoServer = new MongoMemoryServer()
   const User = require('./models/user')
@@ -193,10 +192,12 @@ if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     })
     .catch(error => logger.error(error))
 } else if (process.env.NODE_ENV === 'production') {
-  mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  mongoose.set('strictQuery', false)
+  mongoose.connect(MONGODB_URI)
 } else {
   var mongoDB = 'mongodb://localhost:27017/test'
-  mongoose.connect(mongoDB, { useNewUrlParser: true })
+  mongoose.set('strictQuery', false)
+  mongoose.connect(mongoDB)
   var db = mongoose.connection
   db.on('error', logger.error('MongoDB connection error:'))
 }

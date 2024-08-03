@@ -46,7 +46,7 @@ bacteriumRouter.delete('/:id', async (request, response) => {
       if (casesUsingBacterium.length > 0) {
         return response.status(400).json({ error: libraryBacteria.usedInCase })
       }
-      await Bacterium.findByIdAndRemove(request.params.id)
+      await Bacterium.findByIdAndDelete(request.params.id)
       response.status(204).end()
     } catch (error) {
       return response.status(400).json({ error: error.message })
@@ -64,11 +64,12 @@ bacteriumRouter.put('/:id', async (request, response) => {
         { name: request.body.name },
         { new: true, runValidators: true, context: 'query' }
       )
-      if (!updatedBacterium) {
-        return response.status(400).json({ error: libraryBacteria.notFound })
-      }
       return response.status(200).json(updatedBacterium)
     } catch (error) {
+      if (error.message?.includes('doesnotexist')) {
+        return response.status(400).json({ error: libraryBacteria.notFound })
+      }
+
       return response.status(400).json({ error: error.message })
     }
   } else {

@@ -124,9 +124,9 @@ userRouter.delete('/:id', async (request, response) => {
         return response.status(400).json({ error: libraryUser.wrongPassword })
       }
       const creditToDelete = await Credit.findOne({ user: userToDelete })
-      await User.findByIdAndRemove(request.params.id)
+      await User.findByIdAndDelete(request.params.id)
       if (creditToDelete) {
-        await Credit.findByIdAndRemove(creditToDelete.id)
+        await Credit.findByIdAndDelete(creditToDelete.id)
       }
       response.status(204).end()
     } catch (error) {
@@ -136,9 +136,9 @@ userRouter.delete('/:id', async (request, response) => {
     try {
       const userToDelete = await User.findById(request.params.id)
       const creditToDelete = await Credit.findOne({ user: userToDelete })
-      await User.findByIdAndRemove(request.params.id)
+      await User.findByIdAndDelete(request.params.id)
       if (creditToDelete) {
-        await Credit.findByIdAndRemove(creditToDelete.id)
+        await Credit.findByIdAndDelete(creditToDelete.id)
       }
       response.status(204).end()
     } catch (error) {
@@ -157,11 +157,11 @@ userRouter.put('/:id/promote', async (request, response) => {
         { admin: true },
         { new: true, runValidators: true, context: 'query' }
       )
-      if (!updatedUser) {
-        return response.status(400).json({ error: libraryUser.userNotFound })
-      }
       return response.status(200).json(updatedUser.toJSON())
     } catch (error) {
+      if (error.message.includes('doesnotexist')) {
+        return response.status(400).json({ error: libraryUser.userNotFound })
+      }
       return response.status(400).json({ error: error.message })
     }
   } else {
@@ -177,11 +177,11 @@ userRouter.put('/:id/demote', async (request, response) => {
         { admin: false },
         { new: true, runValidators: true, context: 'query' }
       )
-      if (!updatedUser) {
-        return response.status(400).json({ error: libraryUser.userNotFound })
-      }
       return response.status(200).json(updatedUser.toJSON())
     } catch (error) {
+      if (error.message.includes('doesnotexist')) {
+        return response.status(400).json({ error: libraryUser.userNotFound })
+      }
       return response.status(400).json({ error: error.message })
     }
   } else {
@@ -315,14 +315,14 @@ userRouter.put('/', async (request, response) => {
             runValidators: true,
             context: 'query',
           })
-          if (!updatedUser) {
-            return response.status(400).json({ error: libraryUser.userNotFound })
-          }
           return response.status(200).json(updatedUser.toJSON())
         } else {
           return response.status(400).json({ error: libraryUser.wrongPassword })
         }
       } catch (error) {
+        if (error.message.includes('doesnotexist')) {
+          return response.status(400).json({ error: libraryUser.userNotFound })
+        }
         return response.status(400).json({ error: error.message })
       }
     }

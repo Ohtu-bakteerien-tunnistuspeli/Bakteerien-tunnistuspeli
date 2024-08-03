@@ -151,10 +151,6 @@ testRouter.put(
           path: 'bacteriaSpecificImages.bacterium',
           model: 'Bacterium',
         })
-        if (!testToEdit) {
-          deleteUploadedImages(request)
-          return response.status(400).json({ error: libraryTestCase.testNotFound })
-        }
         let testToUpdate = {
           name: request.body.name,
           type: request.body.type,
@@ -256,6 +252,9 @@ testRouter.put(
         return response.status(200).json(updatetTest)
       } catch (error) {
         deleteUploadedImages(request)
+        if (error.message.includes('doesnotexist')) {
+          return response.status(400).json({ error: libraryTestCase.testNotFound })
+        }
         return response.status(400).json({ error: error.message })
       }
     } else {
@@ -319,7 +318,7 @@ testRouter.delete('/:id', async (request, response) => {
           }
         })
       }
-      await Test.findByIdAndRemove(request.params.id)
+      await Test.findByIdAndDelete(request.params.id)
       return response.status(204).end()
     } catch (error) {
       return response.status(400).json({ error: libraryTestCase.testNotFound })

@@ -17,7 +17,7 @@ creditRouter.delete('/', async (request, response) => {
   if (request.user && request.user.admin) {
     const creditsToDelete = request.body
     try {
-      const promiseArray = creditsToDelete.map(credit => Credit.findByIdAndRemove(credit))
+      const promiseArray = creditsToDelete.map(credit => Credit.findByIdAndDelete(credit))
       await Promise.all(promiseArray)
     } catch (error) {
       //do nothing

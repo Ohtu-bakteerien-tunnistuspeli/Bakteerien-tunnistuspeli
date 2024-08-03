@@ -197,7 +197,7 @@ caseRouter.delete('/:id', async (request, response) => {
     try {
       const caseToDelete = await Case.findById(request.params.id)
       fs.unlink(`${imageDir}/${caseToDelete.completionImage.url}`, error => error)
-      await Case.findByIdAndRemove(request.params.id)
+      await Case.findByIdAndDelete(request.params.id)
       response.status(204).end()
     } catch (error) {
       return response.status(400).json({ error: error.message })
@@ -213,10 +213,6 @@ caseRouter.put('/:id', upload.fields([{ name: 'completionImage', maxCount: 1 }])
     const deleteEndImage = request.body.deleteEndImage
     try {
       const caseToUpdate = await Case.findById(request.params.id)
-      if (!caseToUpdate) {
-        deleteUploadedImages(request)
-        return response.status(400).json({ error: libraryCase.caseNotFound })
-      }
       let changes = {
         name: request.body.name,
       }
@@ -344,6 +340,9 @@ caseRouter.put('/:id', upload.fields([{ name: 'completionImage', maxCount: 1 }])
       return response.status(200).json(updatedCase)
     } catch (error) {
       deleteUploadedImages(request)
+      if (error.message.includes('doesnotexist')) {
+        return response.status(400).json({ error: libraryCase.caseNotFound })
+      }
       return response.status(400).json({ error: error.message })
     }
   } else {
@@ -355,10 +354,7 @@ caseRouter.put('/:id', upload.fields([{ name: 'completionImage', maxCount: 1 }])
 caseRouter.put('/:id/hints', async (request, response) => {
   if (request.user && request.user.admin) {
     try {
-      const caseToUpdate = await Case.findById(request.params.id)
-      if (!caseToUpdate) {
-        return response.status(400).json({ error: libraryCase.caseNotFound })
-      }
+      await Case.findById(request.params.id)
       const hints = request.body
       let testsWithHints = []
       let hasMoreThanOneSame = false
@@ -401,6 +397,9 @@ caseRouter.put('/:id/hints', async (request, response) => {
         })
       return response.status(200).json(updatedCase)
     } catch (error) {
+      if (error.message.includes('doesnotexist')) {
+        return response.status(400).json({ error: libraryCase.caseNotFound })
+      }
       return response.status(400).json({ error: error.message })
     }
   } else {
