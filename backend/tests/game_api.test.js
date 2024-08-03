@@ -1,3 +1,5 @@
+const { test, beforeEach, describe, after } = require('node:test')
+const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
@@ -17,7 +19,12 @@ beforeEach(async () => {
   const adminPassword = await bcrypt.hash('admin', 10)
   const userPassword = await bcrypt.hash('password', 10)
   const admin = new User({ username: 'adminNew', passwordHash: adminPassword, admin: true, email: 'example11111@com' })
-  const user = new User({ username: 'usernameNew', passwordHash: userPassword, admin: false, email: 'example22222@com' })
+  const user = new User({
+    username: 'usernameNew',
+    passwordHash: userPassword,
+    admin: false,
+    email: 'example22222@com',
+  })
   await admin.save()
   await user.save()
   const bacterium = new Bacterium({ name: 'Streptococcus agalactiaee' })
@@ -41,22 +48,27 @@ beforeEach(async () => {
   const penisilliini = new Test({ name: 'Penisilliinin sietokoe agarvaluamenetelmällää', type: 'Testi' })
   await penisilliini.save()
 
-  const textForAnamesis = 'Tilalla on 27 lypsävää lehmää parsinavetassa ja lisäksi nuorkarjaa. Kuivikkeena käytetään kutteria, vesi tulee omasta kaivosta. Pääosa lehmistä on omaa tuotantoa, mutta navetan laajennuksen yhteydessä edellisenä kesänä hankittiin muutama uusi tiine eläin, jotka poikivat loppusyksystä.'
-  'Yleisesti utareterveys on ollut tilalla hyvä; yksi lehmä on solutellut jo pidempään. Muurikki on alkanut oireilla vasta hiljan. Varsinaisia yleisoireita ei ole aivan hienoista vaisuutta lukuun ottamatta. Utare on kuitenkin selvästi turvonnut, soluluku noussut kaikissa neljänneksissä ja maitomäärä pudonnut.'
-  'Vasemman takaneljänneksen maito on hiukan kokkareista. '
-  const samples = [{
-    description: 'Tankin maitonäyte',
-    rightAnswer: false
-  }, {
-    description: 'Ulostenäyte Muurikilta',
-    rightAnswer: false
-  }, {
-    description: 'Maitonäyte Muurikin kaikista neljänneksistä',
-    rightAnswer: true
-  }, {
-    description: 'Virtsanäyte Muurikilta',
-    rightAnswer: false
-  },
+  const textForAnamesis =
+    'Tilalla on 27 lypsävää lehmää parsinavetassa ja lisäksi nuorkarjaa. Kuivikkeena käytetään kutteria, vesi tulee omasta kaivosta. Pääosa lehmistä on omaa tuotantoa, mutta navetan laajennuksen yhteydessä edellisenä kesänä hankittiin muutama uusi tiine eläin, jotka poikivat loppusyksystä.'
+  ;('Yleisesti utareterveys on ollut tilalla hyvä; yksi lehmä on solutellut jo pidempään. Muurikki on alkanut oireilla vasta hiljan. Varsinaisia yleisoireita ei ole aivan hienoista vaisuutta lukuun ottamatta. Utare on kuitenkin selvästi turvonnut, soluluku noussut kaikissa neljänneksissä ja maitomäärä pudonnut.')
+  ;('Vasemman takaneljänneksen maito on hiukan kokkareista. ')
+  const samples = [
+    {
+      description: 'Tankin maitonäyte',
+      rightAnswer: false,
+    },
+    {
+      description: 'Ulostenäyte Muurikilta',
+      rightAnswer: false,
+    },
+    {
+      description: 'Maitonäyte Muurikin kaikista neljänneksistä',
+      rightAnswer: true,
+    },
+    {
+      description: 'Virtsanäyte Muurikilta',
+      rightAnswer: false,
+    },
   ]
   let case1 = {
     name: 'Maitotila 11',
@@ -67,8 +79,8 @@ beforeEach(async () => {
     complete: true,
     completionImage: {
       url: 'image',
-      contentType: 'string'
-    }
+      contentType: 'string',
+    },
   }
   let case2 = {
     name: 'Maitotila 12',
@@ -79,67 +91,91 @@ beforeEach(async () => {
     complete: false,
     completionImage: {
       url: 'image',
-      contentType: 'string'
-    }
+      contentType: 'string',
+    },
   }
   const testGroups = [
     [
       {
-        tests: [{
-          test: veriagar,
-          positive: true
-        }],
+        tests: [
+          {
+            test: veriagar,
+            positive: true,
+          },
+        ],
         isRequired: true,
-      }
-    ], [
+      },
+    ],
+    [
       {
-        tests: [{
-          test: gram,
-          positive: true
-        }],
-        isRequired: true
-      }
-    ], [
+        tests: [
+          {
+            test: gram,
+            positive: true,
+          },
+        ],
+        isRequired: true,
+      },
+    ],
+    [
       {
-        tests: [{
-          test: katalaasi,
-          positive: false
-        }],
+        tests: [
+          {
+            test: katalaasi,
+            positive: false,
+          },
+        ],
         isRequired: true,
-      }
-    ], [
+      },
+    ],
+    [
       {
-        tests: [{
-          test: hirs,
-          positive: true
-        }],
+        tests: [
+          {
+            test: hirs,
+            positive: true,
+          },
+        ],
         isRequired: true,
-      }, {
-        tests: [{
-          test: eskuliini,
-          positive: true
-        }, {
-          test: edwards,
-          positive: true
-        }],
+      },
+      {
+        tests: [
+          {
+            test: eskuliini,
+            positive: true,
+          },
+          {
+            test: edwards,
+            positive: true,
+          },
+        ],
         isRequired: true,
-      }, {
-        tests: [{
-          test: penisilliini,
-          positive: true
-        }],
+      },
+      {
+        tests: [
+          {
+            test: penisilliini,
+            positive: true,
+          },
+        ],
         isRequired: true,
-      }, {
-        tests: [{
-          test: lancefield,
-          positive: true
-        }],
+      },
+      {
+        tests: [
+          {
+            test: lancefield,
+            positive: true,
+          },
+        ],
         isRequired: false,
-      }, {
-        tests: [{
-          test: camp,
-          postive: true,
-        }],
+      },
+      {
+        tests: [
+          {
+            test: camp,
+            postive: true,
+          },
+        ],
         isRequired: false,
       },
     ],
@@ -183,22 +219,27 @@ describe('starting game', () => {
     const penisilliini = new Test({ name: 'Penisilliinin sietokoe agarvaluamenetelmällää', type: 'Testi' })
     await penisilliini.save()
 
-    const textForAnamesis = 'Tilalla on 27 lypsävää lehmää parsinavetassa ja lisäksi nuorkarjaa. Kuivikkeena käytetään kutteria, vesi tulee omasta kaivosta. Pääosa lehmistä on omaa tuotantoa, mutta navetan laajennuksen yhteydessä edellisenä kesänä hankittiin muutama uusi tiine eläin, jotka poikivat loppusyksystä.'
-    'Yleisesti utareterveys on ollut tilalla hyvä; yksi lehmä on solutellut jo pidempään. Muurikki on alkanut oireilla vasta hiljan. Varsinaisia yleisoireita ei ole aivan hienoista vaisuutta lukuun ottamatta. Utare on kuitenkin selvästi turvonnut, soluluku noussut kaikissa neljänneksissä ja maitomäärä pudonnut.'
-    'Vasemman takaneljänneksen maito on hiukan kokkareista. '
-    const samples = [{
-      description: 'Tankin maitonäyte',
-      rightAnswer: false
-    }, {
-      description: 'Ulostenäyte Muurikilta',
-      rightAnswer: false
-    }, {
-      description: 'Maitonäyte Muurikin kaikista neljänneksistä',
-      rightAnswer: true
-    }, {
-      description: 'Virtsanäyte Muurikilta',
-      rightAnswer: false
-    },
+    const textForAnamesis =
+      'Tilalla on 27 lypsävää lehmää parsinavetassa ja lisäksi nuorkarjaa. Kuivikkeena käytetään kutteria, vesi tulee omasta kaivosta. Pääosa lehmistä on omaa tuotantoa, mutta navetan laajennuksen yhteydessä edellisenä kesänä hankittiin muutama uusi tiine eläin, jotka poikivat loppusyksystä.'
+    ;('Yleisesti utareterveys on ollut tilalla hyvä; yksi lehmä on solutellut jo pidempään. Muurikki on alkanut oireilla vasta hiljan. Varsinaisia yleisoireita ei ole aivan hienoista vaisuutta lukuun ottamatta. Utare on kuitenkin selvästi turvonnut, soluluku noussut kaikissa neljänneksissä ja maitomäärä pudonnut.')
+    ;('Vasemman takaneljänneksen maito on hiukan kokkareista. ')
+    const samples = [
+      {
+        description: 'Tankin maitonäyte',
+        rightAnswer: false,
+      },
+      {
+        description: 'Ulostenäyte Muurikilta',
+        rightAnswer: false,
+      },
+      {
+        description: 'Maitonäyte Muurikin kaikista neljänneksistä',
+        rightAnswer: true,
+      },
+      {
+        description: 'Virtsanäyte Muurikilta',
+        rightAnswer: false,
+      },
     ]
     let case1 = {
       name: 'Maitotila 11',
@@ -209,8 +250,8 @@ describe('starting game', () => {
       complete: true,
       completionImage: {
         url: 'image',
-        contentType: 'string'
-      }
+        contentType: 'string',
+      },
     }
     let case2 = {
       name: 'Maitotila 12',
@@ -221,67 +262,91 @@ describe('starting game', () => {
       complete: false,
       completionImage: {
         url: 'image',
-        contentType: 'string'
-      }
+        contentType: 'string',
+      },
     }
     const testGroups = [
       [
         {
-          tests: [{
-            test: veriagar,
-            positive: true
-          }],
+          tests: [
+            {
+              test: veriagar,
+              positive: true,
+            },
+          ],
           isRequired: true,
-        }
-      ], [
+        },
+      ],
+      [
         {
-          tests: [{
-            test: gram,
-            positive: true
-          }],
-          isRequired: true
-        }
-      ], [
+          tests: [
+            {
+              test: gram,
+              positive: true,
+            },
+          ],
+          isRequired: true,
+        },
+      ],
+      [
         {
-          tests: [{
-            test: katalaasi,
-            positive: false
-          }],
+          tests: [
+            {
+              test: katalaasi,
+              positive: false,
+            },
+          ],
           isRequired: true,
-        }
-      ], [
+        },
+      ],
+      [
         {
-          tests: [{
-            test: hirs,
-            positive: true
-          }],
+          tests: [
+            {
+              test: hirs,
+              positive: true,
+            },
+          ],
           isRequired: true,
-        }, {
-          tests: [{
-            test: eskuliini,
-            positive: true
-          }, {
-            test: edwards,
-            positive: true
-          }],
+        },
+        {
+          tests: [
+            {
+              test: eskuliini,
+              positive: true,
+            },
+            {
+              test: edwards,
+              positive: true,
+            },
+          ],
           isRequired: true,
-        }, {
-          tests: [{
-            test: penisilliini,
-            positive: true
-          }],
+        },
+        {
+          tests: [
+            {
+              test: penisilliini,
+              positive: true,
+            },
+          ],
           isRequired: true,
-        }, {
-          tests: [{
-            test: lancefield,
-            positive: true
-          }],
+        },
+        {
+          tests: [
+            {
+              test: lancefield,
+              positive: true,
+            },
+          ],
           isRequired: false,
-        }, {
-          tests: [{
-            test: camp,
-            postive: true,
-          }],
+        },
+        {
+          tests: [
+            {
+              test: camp,
+              postive: true,
+            },
+          ],
           isRequired: false,
         },
       ],
@@ -292,25 +357,23 @@ describe('starting game', () => {
     await new Case(case2).save()
   })
   test('user can get list of cases', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     const getResponse = await api
       .get('/api/case')
       .set('Authorization', `bearer ${user.body.token}`)
       .expect('Content-Type', /application\/json/)
       .expect(200)
-    expect(getResponse.body).toHaveLength(1)
-    expect(getResponse.body[0].id).toBeTruthy()
-    expect(getResponse.body[0].name).toBeTruthy()
-    expect(getResponse.body[0].samples).toBeUndefined()
-    expect(getResponse.body[0].testGroups).toBeUndefined()
-    expect(getResponse.body[0].anamnesis).toBeUndefined()
-    expect(getResponse.body[0].bacterium).toBeUndefined()
-    expect(getResponse.body[0].completionImage).toBeUndefined()
+    assert.strictEqual(getResponse.body.length, 1)
+    assert(getResponse.body[0].id)
+    assert(getResponse.body[0].name)
+    assert(!getResponse.body[0].samples)
+    assert(!getResponse.body[0].testGroups)
+    assert(!getResponse.body[0].anamnesis)
+    assert(!getResponse.body[0].bacterium)
+    assert(!getResponse.body[0].completionImage)
   })
 
   test('non-user cannot get list of cases', async () => {
@@ -321,34 +384,30 @@ describe('starting game', () => {
   })
 
   test('user can get single case to play', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     const caseToTest = await Case.findOne({ name: 'Maitotila 11' })
     const getResponse = await api
       .get(`/api/game/${caseToTest.id}`)
       .set('Authorization', `bearer ${user.body.token}`)
       .expect('Content-Type', /application\/json/)
       .expect(200)
-    expect(getResponse.body.id).toBeTruthy()
-    expect(getResponse.body.name).toBeTruthy()
-    expect(getResponse.body.samples).toBeTruthy()
-    expect(getResponse.body.testGroups).toBeUndefined()
-    expect(getResponse.body.anamnesis).toBeTruthy()
-    expect(getResponse.body.bacterium).toBeUndefined()
-    expect(getResponse.body.completionImage).toBeUndefined()
+    assert(getResponse.body.id)
+    assert(getResponse.body.name)
+    assert(getResponse.body.samples)
+    assert(!getResponse.body.testGroups)
+    assert(getResponse.body.anamnesis)
+    assert(!getResponse.body.bacterium)
+    assert(!getResponse.body.completionImage)
   })
 
   test('getting bad case returns error 400', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     await api
       .get('/api/game/badId')
       .set('Authorization', `bearer ${user.body.token}`)
@@ -367,12 +426,10 @@ describe('starting game', () => {
 
 describe('checking sample', () => {
   test('giving correct samples gives correct answer', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     const caseToTest = await Case.findOne({ name: 'Maitotila 11' })
     const samples = { samples: ['Maitonäyte Muurikin kaikista neljänneksistä'] }
     const checkingResponse = await api
@@ -381,16 +438,14 @@ describe('checking sample', () => {
       .send(samples)
       .expect('Content-Type', /application\/json/)
       .expect(200)
-    expect(checkingResponse.body.correct).toEqual(true)
+    assert.strictEqual(checkingResponse.body.correct, true)
   })
 
   test('giving wrong samples gives incorrect answer', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     const caseToTest = await Case.findOne({ name: 'Maitotila 11' })
     const samples = { samples: ['Virtsanäyte Muurikilta'] }
     const checkingResponse = await api
@@ -399,16 +454,14 @@ describe('checking sample', () => {
       .send(samples)
       .expect('Content-Type', /application\/json/)
       .expect(200)
-    expect(checkingResponse.body.correct).toEqual(false)
+    assert.strictEqual(checkingResponse.body.correct, false)
   })
 
   test('giving wrong number of samples gives incorrect answer', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     const caseToTest = await Case.findOne({ name: 'Maitotila 11' })
     const samples = { samples: ['Maitonäyte Muurikin kaikista neljänneksistä', 'Virtsanäyte Muurikilta'] }
     const checkingResponse = await api
@@ -417,16 +470,14 @@ describe('checking sample', () => {
       .send(samples)
       .expect('Content-Type', /application\/json/)
       .expect(200)
-    expect(checkingResponse.body.correct).toEqual(false)
+    assert.strictEqual(checkingResponse.body.correct, false)
   })
 
   test('giving no samples gives incorrect answer', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     const caseToTest = await Case.findOne({ name: 'Maitotila 11' })
     const samples = { samples: [] }
     const checkingResponse = await api
@@ -435,16 +486,14 @@ describe('checking sample', () => {
       .send(samples)
       .expect('Content-Type', /application\/json/)
       .expect(200)
-    expect(checkingResponse.body.correct).toEqual(false)
+    assert.strictEqual(checkingResponse.body.correct, false)
   })
 
   test('checking samples for bad case return error 400', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     const samples = { samples: ['Maitonäyte Muurikin kaikista neljänneksistä'] }
     await api
       .post('/api/game/badId/checkSamples')
@@ -467,12 +516,10 @@ describe('checking sample', () => {
 
 describe('checking bacterium', () => {
   test('giving correct bacterium gives correct answer', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     const caseToTest = await Case.findOne({ name: 'Maitotila 11' })
     const bacterium = { bacteriumName: 'Streptococcus agalactiaee' }
     const checkingResponse = await api
@@ -481,17 +528,15 @@ describe('checking bacterium', () => {
       .send(bacterium)
       .expect('Content-Type', /application\/json/)
       .expect(200)
-    expect(checkingResponse.body.correct).toEqual(true)
-    expect(checkingResponse.body.completionImageUrl).toBeTruthy()
+    assert.strictEqual(checkingResponse.body.correct, true)
+    assert(checkingResponse.body.completionImageUrl)
   })
 
   test('giving correct bacterium in lower case gives correct answer', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     const caseToTest = await Case.findOne({ name: 'Maitotila 11' })
     const bacterium = { bacteriumName: 'streptococcus agalactiaee' }
     const checkingResponse = await api
@@ -500,17 +545,15 @@ describe('checking bacterium', () => {
       .send(bacterium)
       .expect('Content-Type', /application\/json/)
       .expect(200)
-    expect(checkingResponse.body.correct).toEqual(true)
-    expect(checkingResponse.body.completionImageUrl).toBeTruthy()
+    assert.strictEqual(checkingResponse.body.correct, true)
+    assert(checkingResponse.body.completionImageUrl)
   })
 
   test('giving correct bacterium in upper case gives correct answer', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     const caseToTest = await Case.findOne({ name: 'Maitotila 11' })
     const bacterium = { bacteriumName: 'STREPTOCOCCUS AGALACTIAEE' }
     const checkingResponse = await api
@@ -519,17 +562,15 @@ describe('checking bacterium', () => {
       .send(bacterium)
       .expect('Content-Type', /application\/json/)
       .expect(200)
-    expect(checkingResponse.body.correct).toEqual(true)
-    expect(checkingResponse.body.completionImageUrl).toBeTruthy()
+    assert.strictEqual(checkingResponse.body.correct, true)
+    assert(checkingResponse.body.completionImageUrl)
   })
 
   test('giving wrong bacterium gives incorrect answer', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     const caseToTest = await Case.findOne({ name: 'Maitotila 11' })
     const bacterium = { bacteriumName: 'Koli' }
     const checkingResponse = await api
@@ -538,16 +579,14 @@ describe('checking bacterium', () => {
       .send(bacterium)
       .expect('Content-Type', /application\/json/)
       .expect(200)
-    expect(checkingResponse.body.correct).toEqual(false)
+    assert.strictEqual(checkingResponse.body.correct, false)
   })
 
   test('giving no bacterium gives incorrect answer', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     const caseToTest = await Case.findOne({ name: 'Maitotila 11' })
     const bacterium = {}
     const checkingResponse = await api
@@ -556,16 +595,14 @@ describe('checking bacterium', () => {
       .send(bacterium)
       .expect('Content-Type', /application\/json/)
       .expect(200)
-    expect(checkingResponse.body.correct).toEqual(false)
+    assert(!checkingResponse.body.correct)
   })
 
   test('checking bacterium for bad case returns error 400', async () => {
-    const user = await api
-      .post('/api/user/login')
-      .send({
-        username: 'usernameNew',
-        password: 'password'
-      })
+    const user = await api.post('/api/user/login').send({
+      username: 'usernameNew',
+      password: 'password',
+    })
     const bacterium = { bacteriumName: 'Streptococcus agalactiaee' }
     await api
       .post('/api/game/badid/checkBacterium')
@@ -586,8 +623,7 @@ describe('checking bacterium', () => {
   })
 })
 
-
-afterAll(async () => {
+after(async () => {
   await mongoose.connection.close()
   await mongoose.disconnect()
 })
