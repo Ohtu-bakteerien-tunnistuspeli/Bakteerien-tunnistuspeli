@@ -17,10 +17,10 @@ const initialTestCases = [
 ]
 
 beforeEach(async () => {
-  await Bacterium.deleteMany({})
-  await User.deleteMany({})
-  await Test.deleteMany({})
-  await Case.deleteMany({})
+  await Bacterium.deleteMany({}).exec()
+  await User.deleteMany({}).exec()
+  await Test.deleteMany({}).exec()
+  await Case.deleteMany({}).exec()
   const testObjects = initialTestCases.map(test => new Test(test))
   const promiseArray = testObjects.map(test => test.save())
   await Promise.all(promiseArray)

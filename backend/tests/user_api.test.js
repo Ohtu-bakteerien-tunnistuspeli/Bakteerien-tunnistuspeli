@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt')
 const api = supertest(app)
 
 beforeEach(async () => {
-  await User.deleteMany({})
+  await User.deleteMany({}).exec()
   const adminPassword = await bcrypt.hash('admin', 10)
   const userPassword = await bcrypt.hash('password', 10)
   const admin = new User({
@@ -31,6 +31,7 @@ beforeEach(async () => {
   await admin.save()
   await user.save()
 })
+
 describe('login ', () => {
   test('login successfull', async () => {
     await api
