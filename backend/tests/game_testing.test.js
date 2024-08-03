@@ -395,7 +395,6 @@ describe('it is possible to do tests', () => {
     const testCaseAdded = await caseToAdd.save()
 
     const data = [testMap['test0']]
-    console.log(addedTests, data)
     let res = await api
       .post(`/api/game/${testCaseAdded.id}/checkTests`)
       .set('Authorization', `bearer ${user.body.token}`)

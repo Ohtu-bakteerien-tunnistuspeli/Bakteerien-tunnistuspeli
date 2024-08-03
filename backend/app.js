@@ -195,11 +195,16 @@ if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
   mongoose.set('strictQuery', false)
   mongoose.connect(MONGODB_URI)
 } else {
-  var mongoDB = 'mongodb://localhost:27017/test'
+  const mongoDB = 'mongodb://localhost:27017/test'
   mongoose.set('strictQuery', false)
   mongoose.connect(mongoDB)
-  var db = mongoose.connection
-  db.on('error', logger.error('MongoDB connection error:'))
+  mongoose.connection.on('error', error => {
+    if (error.message.code === 'ETIMEDOUT') {
+      logger.error(error)
+      mongoose.connect(mongoDB)
+    }
+    logger.error(error)
+  })
 }
 
 app.use(cors())
