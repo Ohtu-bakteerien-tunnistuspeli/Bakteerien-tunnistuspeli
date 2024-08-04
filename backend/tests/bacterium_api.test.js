@@ -25,9 +25,8 @@ beforeEach(async () => {
   await Test.deleteMany({})
   await Bacterium.deleteMany({})
   await User.deleteMany({})
-  const bacteriaObjects = initialBacteria.map(bacterium => new Bacterium(bacterium))
-  const promiseArray = bacteriaObjects.map(backterium => backterium.save())
-  await Promise.all(promiseArray)
+  await new Bacterium(initialBacteria[0].save())
+  await new Bacterium(initialBacteria[1].save())
   const adminPassword = await bcrypt.hash('admin', 10)
   const userPassword = await bcrypt.hash('password', 10)
   const admin = new User({
