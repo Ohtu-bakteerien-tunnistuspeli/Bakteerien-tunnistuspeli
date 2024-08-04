@@ -108,91 +108,95 @@ const getTests = async () => {
   }
   return testMap
 }
+describe('game testing', () => {
+  beforeEach(async () => {
+    // Clean db
+    await Case.deleteMany({})
+    await Test.deleteMany({})
+    await Bacterium.deleteMany({})
+    await Credit.deleteMany({})
+    await User.deleteMany({})
+    // Create admin
+    const adminPassword = await bcrypt.hash('admin', 10)
+    await new User({
+      username: 'adminNew',
+      passwordHash: adminPassword,
+      admin: true,
+      email: 'example333333@com',
+    }).save()
 
-beforeEach(async () => {
-  // Clean db
-  await Case.deleteMany({})
-  await Test.deleteMany({})
-  await Bacterium.deleteMany({})
-  await Credit.deleteMany({})
-  await User.deleteMany({})
-  // Create admin
-  const adminPassword = await bcrypt.hash('admin', 10)
-  await new User({ username: 'adminNew', passwordHash: adminPassword, admin: true, email: 'example333333@com' }).save()
+    const addedTests = initialTests.map(test => new Test(test))
+    await Test.insertMany(addedTests)
+    // Create name -> id map of tests
 
-  const addedTests = initialTests.map(test => new Test(test))
-  await Test.insertMany(addedTests)
-  // Create name -> id map of tests
-
-  // Add initial bacterium
-  const initialBacterium = await new Bacterium(initialBacteriumForCase).save()
-  // Add initial case
-  await new Case({
-    name: 'Test case',
-    anamnesis: 'Test case',
-    bacterium: initialBacterium,
-    samples: initialSamples,
-    testGroups: [
-      [
-        // Group 1
+    // Add initial bacterium
+    const initialBacterium = await new Bacterium(initialBacteriumForCase).save()
+    // Add initial case
+    await new Case({
+      name: 'Test case',
+      anamnesis: 'Test case',
+      bacterium: initialBacterium,
+      samples: initialSamples,
+      testGroups: [
+        [
+          // Group 1
+          {
+            tests: [
+              { test: addedTests[0], positive: true },
+              { test: addedTests[1], positive: false },
+            ],
+            isRequired: true,
+          },
+          {
+            tests: [{ test: addedTests[2], positive: true }],
+            isRequired: false,
+          },
+        ],
+        [
+          // Group 2
+          {
+            tests: [{ test: addedTests[3], positive: true }],
+            isRequired: true,
+          },
+          {
+            tests: [{ test: addedTests[4], positive: false }],
+            isRequired: false,
+          },
+        ],
+        [
+          // Group 3
+          {
+            tests: [
+              { test: addedTests[5], positive: true },
+              { test: addedTests[6], positive: true },
+            ],
+            isRequired: true,
+          },
+          {
+            tests: [
+              { test: addedTests[7], positive: true },
+              { test: addedTests[8], positive: false },
+            ],
+            isRequired: true,
+          },
+        ],
+        [
+          // Group 4
+          {
+            tests: [{ test: addedTests[9], positive: true }],
+            isRequired: true,
+          },
+        ],
+      ],
+      hints: [
         {
-          tests: [
-            { test: addedTests[0], positive: true },
-            { test: addedTests[1], positive: false },
-          ],
-          isRequired: true,
-        },
-        {
-          tests: [{ test: addedTests[2], positive: true }],
-          isRequired: false,
+          test: addedTests[9],
+          hint: 'test hint',
         },
       ],
-      [
-        // Group 2
-        {
-          tests: [{ test: addedTests[3], positive: true }],
-          isRequired: true,
-        },
-        {
-          tests: [{ test: addedTests[4], positive: false }],
-          isRequired: false,
-        },
-      ],
-      [
-        // Group 3
-        {
-          tests: [
-            { test: addedTests[5], positive: true },
-            { test: addedTests[6], positive: true },
-          ],
-          isRequired: true,
-        },
-        {
-          tests: [
-            { test: addedTests[7], positive: true },
-            { test: addedTests[8], positive: false },
-          ],
-          isRequired: true,
-        },
-      ],
-      [
-        // Group 4
-        {
-          tests: [{ test: addedTests[9], positive: true }],
-          isRequired: true,
-        },
-      ],
-    ],
-    hints: [
-      {
-        test: addedTests[9],
-        hint: 'test hint',
-      },
-    ],
-  }).save()
-})
+    }).save()
+  })
 
-describe('it is possible to do tests', () => {
   test('admin can do tests', async () => {
     const testMap = await getTests()
     const user = await getLoggedInAdmin()
@@ -440,9 +444,7 @@ describe('it is possible to do tests', () => {
     assert.strictEqual(res.body.requiredDone, true)
     assert.strictEqual(res.body.allDone, false)
   })
-})
 
-describe('it is possible to do multiple tests', () => {
   test('user can do tests from second group after completing all required tests from the first one', async () => {
     const testMap = await getTests()
     const user = await getLoggedInAdmin()
@@ -523,10 +525,8 @@ describe('it is possible to do multiple tests', () => {
     assert.strictEqual(res.body.requiredDone, true)
     assert.strictEqual(res.body.allDone, true)
   })
-})
 
-describe('correct errors are given', () => {
-  test('when no list is posted', async () => {
+  test('Correct errors when no list is posted', async () => {
     const user = await api.post('/api/user/login').send({
       username: 'adminNew',
       password: 'admin',

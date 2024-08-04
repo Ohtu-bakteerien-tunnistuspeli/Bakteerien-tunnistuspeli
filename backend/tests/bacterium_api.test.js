@@ -62,7 +62,7 @@ describe('bacteria tests', () => {
       username: 'adminNewBac',
       password: 'admin',
     })
-    console.log(user)
+    console.log(user.body)
     const res = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
     const initialLength = res.body.length
     await api

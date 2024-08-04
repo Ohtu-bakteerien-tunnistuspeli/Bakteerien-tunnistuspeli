@@ -11,26 +11,30 @@ const User = require('../models/user')
 const Test = require('../models/testCase')
 const Case = require('../models/case')
 
-const initialTestCases = [
-  { name: 'test1', type: 'type1' },
-  { name: 'test2', type: 'type2' },
-]
+describe('tests', () => {
+  const initialTestCases = [
+    { name: 'test1', type: 'type1' },
+    { name: 'test2', type: 'type2' },
+  ]
 
-beforeEach(async () => {
-  await Case.deleteMany({})
-  await Test.deleteMany({})
-  await Bacterium.deleteMany({})
-  await User.deleteMany({})
-  const testObjects = initialTestCases.map(test => new Test(test))
-  const promiseArray = testObjects.map(test => test.save())
-  await Promise.all(promiseArray)
-  const adminPassword = await bcrypt.hash('admin', 10)
-  await new User({ username: 'adminNew', passwordHash: adminPassword, admin: true, email: 'example111111@com' }).save()
-  const userPassword = await bcrypt.hash('user', 10)
-  await new User({ username: 'userNew', passwordHash: userPassword, admin: false, email: 'examples1@com' }).save()
-})
-
-describe('test format', () => {
+  beforeEach(async () => {
+    await Case.deleteMany({})
+    await Test.deleteMany({})
+    await Bacterium.deleteMany({})
+    await User.deleteMany({})
+    const testObjects = initialTestCases.map(test => new Test(test))
+    const promiseArray = testObjects.map(test => test.save())
+    await Promise.all(promiseArray)
+    const adminPassword = await bcrypt.hash('admin', 10)
+    await new User({
+      username: 'adminNew',
+      passwordHash: adminPassword,
+      admin: true,
+      email: 'example11111@com',
+    }).save()
+    const userPassword = await bcrypt.hash('user', 10)
+    await new User({ username: 'userNew', passwordHash: userPassword, admin: false, email: 'example1@com' }).save()
+  })
   test('tests are returned as JSON', async () => {
     const user = await api
       .post('/api/user/login')
@@ -45,9 +49,7 @@ describe('test format', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
-})
 
-describe('addition of a test', () => {
   test('admin can add a test', async () => {
     const user = await api.post('/api/user/login').send({
       username: 'adminNew',
@@ -240,9 +242,7 @@ describe('addition of a test', () => {
     const res = await api.post('/api/test').set('Authorization', `bearer ${user.body.token}`).send(newTest2).expect(400)
     assert.strictEqual(res.body.error, 'Test validation failed: type: Tyypin tulee olla enintään 100 merkkiä pitkä.')
   })
-})
 
-describe('modifying of a test', () => {
   test('admin can modify existing test', async () => {
     const user = await api.post('/api/user/login').send({
       username: 'adminNew',
@@ -340,9 +340,7 @@ describe('modifying of a test', () => {
       .expect(400)
     assert.strictEqual(modifyRes.body.error, 'Validation failed: name: Nimen tulee olla uniikki.')
   })
-})
 
-describe('deleting of a test', () => {
   test('admin can delete a test', async () => {
     const user = await api.post('/api/user/login').send({
       username: 'adminNew',

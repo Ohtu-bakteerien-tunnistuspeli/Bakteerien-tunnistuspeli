@@ -50,9 +50,7 @@ describe('login ', () => {
       })
       .expect(400)
   })
-})
 
-describe('register ', () => {
   test('valid user with compulsory fields can register', async () => {
     await api
       .post('/api/user/register')
@@ -268,9 +266,7 @@ describe('getting users', () => {
       .expect(401)
       .expect('Content-Type', /application\/json/)
   })
-})
 
-describe('delete', () => {
   test('user can delete itself', async () => {
     const user = await User.findOne({ username: 'usernameNew' })
     const loggedUser = await api
@@ -365,9 +361,7 @@ describe('delete', () => {
     credit = await Credit.findOne({ user })
     assert.strictEqual(credit, null)
   })
-})
 
-describe('promote', () => {
   test('admin can promote user', async () => {
     const user = await User.findOne({ username: 'usernameNew' })
     let loggedUser = await api
@@ -421,9 +415,7 @@ describe('promote', () => {
       .expect(200)
     assert.strictEqual(loggedUser.body.admin, false)
   })
-})
 
-describe('demote', () => {
   test('admin can demote user', async () => {
     await User.findOneAndUpdate({ username: 'usernameNew' }, { admin: true })
     const user = await User.findOne({ username: 'usernameNew' })
@@ -479,9 +471,7 @@ describe('demote', () => {
     })
     assert.strictEqual(admin.body.admin, true)
   })
-})
 
-describe('modifying user', () => {
   test('password is required', async () => {
     const loginResponse = await api
       .post('/api/user/login')
@@ -524,9 +514,7 @@ describe('modifying user', () => {
         password: 'password',
       })
       .expect(200)
-  })
 
-  describe('changing password', () => {
     test('admin can change own password', async () => {
       const loginResponse = await api
         .post('/api/user/login')
@@ -619,9 +607,7 @@ describe('modifying user', () => {
         .expect(400)
       assert.match(res.body.error, /Salasanan täytyy olla enintään 100 merkkiä pitkä./)
     })
-  })
 
-  describe('changing student number', () => {
     test('admin can change own student number', async () => {
       const loginResponse = await api
         .post('/api/user/login')
@@ -723,9 +709,7 @@ describe('modifying user', () => {
         .expect(200)
       assert.strictEqual(res.body.studentNumber, '')
     })
-  })
 
-  describe('changing email', () => {
     test('admin can change own email', async () => {
       const loginResponse = await api
         .post('/api/user/login')
@@ -777,9 +761,7 @@ describe('modifying user', () => {
         .expect(400)
       assert.strictEqual(res.body.error, 'Salasana on pakollinen.')
     })
-  })
 
-  describe('changing class group', () => {
     test('admin can change own class group', async () => {
       const loginResponse = await api
         .post('/api/user/login')
@@ -864,9 +846,7 @@ describe('modifying user', () => {
         .expect(200)
       assert.strictEqual(res.body.classGroup, '')
     })
-  })
 
-  describe('changing username', () => {
     test('admin can change own username', async () => {
       const loginResponse = await api
         .post('/api/user/login')
@@ -918,10 +898,8 @@ describe('modifying user', () => {
         .expect(400)
       assert.match(res.body.error, /Salasana on pakollinen./)
     })
-  })
 
-  describe('modifying multiple fields', () => {
-    test('changing every field at once', async () => {
+    test('Modifying: changing every field at once', async () => {
       const loginResponse = await api.post('/api/user/login').send({
         username: 'adminNew',
         password: 'admin',

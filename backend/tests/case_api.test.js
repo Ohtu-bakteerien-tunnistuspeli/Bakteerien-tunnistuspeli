@@ -11,45 +11,45 @@ const User = require('../models/user')
 const Test = require('../models/testCase')
 const Case = require('../models/case')
 
-const initialBacteria = [
-  {
-    name: 'koli',
-  },
-  {
-    name: 'tetanus',
-  },
-]
-const initialTest = {
-  name: 'testName',
-  type: 'testType',
-}
+describe('Case ', () => {
+  const initialBacteria = [
+    {
+      name: 'koli',
+    },
+    {
+      name: 'tetanus',
+    },
+  ]
+  const initialTest = {
+    name: 'testName',
+    type: 'testType',
+  }
 
-beforeEach(async () => {
-  await Case.deleteMany({})
-  await Test.deleteMany({})
-  await Bacterium.deleteMany({})
-  await User.deleteMany({})
-  const bacteriaObjects = initialBacteria.map(bacterium => new Bacterium(bacterium))
-  const promiseArray = bacteriaObjects.map(backterium => backterium.save())
-  await Promise.all(promiseArray)
-  const adminPassword = await bcrypt.hash('admin', 10)
-  const userPassword = await bcrypt.hash('password', 10)
-  await new User({
-    username: 'adminNew',
-    passwordHash: adminPassword,
-    admin: true,
-    email: 'exampless1111111111@com',
-  }).save()
-  await new User({
-    username: 'usernameNew',
-    passwordHash: userPassword,
-    admin: false,
-    email: 'examples444444@com',
-  }).save()
-  await Test(initialTest).save()
-})
+  beforeEach(async () => {
+    await Case.deleteMany({})
+    await Test.deleteMany({})
+    await Bacterium.deleteMany({})
+    await User.deleteMany({})
+    const bacteriaObjects = initialBacteria.map(bacterium => new Bacterium(bacterium))
+    const promiseArray = bacteriaObjects.map(backterium => backterium.save())
+    await Promise.all(promiseArray)
+    const adminPassword = await bcrypt.hash('admin', 10)
+    const userPassword = await bcrypt.hash('password', 10)
+    await new User({
+      username: 'adminNew',
+      passwordHash: adminPassword,
+      admin: true,
+      email: 'exampless1111111111@com',
+    }).save()
+    await new User({
+      username: 'usernameNew',
+      passwordHash: userPassword,
+      admin: false,
+      email: 'examples444444@com',
+    }).save()
+    await Test(initialTest).save()
+  })
 
-describe('addition of a case ', () => {
   test('admin can add a case', async () => {
     const user = await api.post('/api/user/login').send({
       username: 'adminNew',
@@ -307,9 +307,7 @@ describe('addition of a case ', () => {
     const resAfterAdding = await api.get('/api/case').set('Authorization', `bearer ${admin.body.token}`)
     assert.strictEqual(resAfterAdding.body.length, initialLength)
   })
-})
 
-describe('deletion of a case', () => {
   test('admin can delete a case', async () => {
     const user = await api.post('/api/user/login').send({
       username: 'adminNew',
@@ -425,9 +423,7 @@ describe('deletion of a case', () => {
     const resAfterDelete = await api.get('/api/bacteria').set('Authorization', `bearer ${admin.body.token}`)
     assert.strictEqual(resAfterDelete.body.length, initialLength)
   })
-})
 
-describe('modify a case', () => {
   test('admin can modify an existing case', async () => {
     const user = await api.post('/api/user/login').send({
       username: 'adminNew',
@@ -727,9 +723,7 @@ describe('modify a case', () => {
       .expect('Content-Type', /application\/json/)
     assert.match(res.body.error, /Annettua tapausta ei löydy tietokannasta./)
   })
-})
 
-describe('add hints to a case', () => {
   test('admin can add hint to an existing case', async () => {
     const user = await api.post('/api/user/login').send({
       username: 'adminNew',
