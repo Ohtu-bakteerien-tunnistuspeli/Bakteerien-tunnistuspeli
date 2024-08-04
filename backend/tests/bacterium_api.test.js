@@ -349,4 +349,5 @@ describe('modifying a bacterium', () => {
 
 after(async () => {
   await mongoose.connection.close()
+  await mongoose.disconnect()
 })

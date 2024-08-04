@@ -25,8 +25,7 @@ beforeEach(async () => {
     admin: false,
     email: 'example22222@com',
   }).save()
-  const allCases = await Case.find({})
-  console.log(allCases)
+
   const bacterium = await new Bacterium({ name: 'Streptococcus agalactiaee' }).save()
   const veriagar = await new Test({ name: 'Veriagar, +37 C, aerobinen kasvatuss', type: 'Viljely' }).save()
   const gram = await new Test({ name: 'Gramvärjäyss', type: 'Värjäys' }).save()
@@ -174,8 +173,6 @@ beforeEach(async () => {
   case2.testGroups = testGroups
   await new Case(case1).save()
   await new Case(case2).save()
-  const allCasews = await Case.find({})
-  console.log(allCasews)
 })
 
 test('user can get list of cases', async () => {
@@ -183,14 +180,12 @@ test('user can get list of cases', async () => {
     username: 'usernameNew',
     password: 'password',
   })
-  const allCases = await Case.find({})
-  console.log(allCases)
+
   const getResponse = await api
     .get('/api/case')
     .set('Authorization', `bearer ${user.body.token}`)
     .expect('Content-Type', /application\/json/)
     .expect(200)
-  console.log(getResponse.body)
   assert.strictEqual(getResponse.body.length, 1)
   assert(getResponse.body[0].id)
   assert(getResponse.body[0].name)
@@ -445,4 +440,5 @@ test('non-user cannot check bacterium', async () => {
 
 after(async () => {
   await mongoose.connection.close()
+  await mongoose.disconnect()
 })

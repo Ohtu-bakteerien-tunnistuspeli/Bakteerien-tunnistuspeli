@@ -21,7 +21,6 @@ if (process.env.NODE_ENV === 'test') {
   mongoServer
     .getUri()
     .then(mongoUri => {
-      console.log(mongoUri)
       mongoose.set('strictQuery', false)
       mongoose.connect(mongoUri)
       mongoose.connection.on('error', error => {

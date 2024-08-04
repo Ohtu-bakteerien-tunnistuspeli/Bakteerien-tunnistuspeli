@@ -542,4 +542,5 @@ describe('correct errors are given', () => {
 
 after(async () => {
   await mongoose.connection.close()
+  await mongoose.disconnect()
 })

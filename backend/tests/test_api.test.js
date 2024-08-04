@@ -409,4 +409,5 @@ describe('deleting of a test', () => {
 
 after(async () => {
   await mongoose.connection.close()
+  await mongoose.disconnect()
 })
