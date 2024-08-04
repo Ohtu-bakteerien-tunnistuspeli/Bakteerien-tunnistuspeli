@@ -25,10 +25,10 @@ const initialTest = {
 }
 
 beforeEach(async () => {
+  await Case.deleteMany({})
+  await Test.deleteMany({})
   await Bacterium.deleteMany({})
   await User.deleteMany({})
-  await Test.deleteMany({})
-  await Case.deleteMany({})
   const bacteriaObjects = initialBacteria.map(bacterium => new Bacterium(bacterium))
   const promiseArray = bacteriaObjects.map(backterium => backterium.save())
   await Promise.all(promiseArray)
@@ -1005,4 +1005,5 @@ describe('add hints to a case', () => {
 
 after(async () => {
   await mongoose.connection.close()
+  await mongoose.disconnect()
 })

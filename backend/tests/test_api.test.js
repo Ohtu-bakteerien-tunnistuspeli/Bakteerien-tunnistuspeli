@@ -17,11 +17,11 @@ const initialTestCases = [
 ]
 
 beforeEach(async () => {
+  await Case.deleteMany({})
+  await Test.deleteMany({})
   await Bacterium.deleteMany({})
   await User.deleteMany({})
-  await Test.deleteMany({})
-  await Case.deleteMany({})
-  const testObjects = initialTestCases.map(test => new Test(test).save())
+  const testObjects = initialTestCases.map(test => new Test(test))
   const promiseArray = testObjects.map(test => test.save())
   await Promise.all(promiseArray)
   const adminPassword = await bcrypt.hash('admin', 10)

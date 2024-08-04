@@ -111,11 +111,11 @@ const getTests = async () => {
 
 beforeEach(async () => {
   // Clean db
-  await Credit.deleteMany({})
-  await Bacterium.deleteMany({})
-  await User.deleteMany({})
-  await Test.deleteMany({})
   await Case.deleteMany({})
+  await Test.deleteMany({})
+  await Bacterium.deleteMany({})
+  await Credit.deleteMany({})
+  await User.deleteMany({})
   // Create admin
   const adminPassword = await bcrypt.hash('admin', 10)
   await new User({ username: 'adminNew', passwordHash: adminPassword, admin: true, email: 'example333333@com' }).save()
