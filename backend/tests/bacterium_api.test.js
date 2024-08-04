@@ -29,20 +29,18 @@ beforeEach(async () => {
   await new Bacterium(initialBacteria[1]).save()
   const adminPassword = await bcrypt.hash('admin', 10)
   const userPassword = await bcrypt.hash('password', 10)
-  const admin = new User({
+  await new User({
     username: 'adminNew',
     passwordHash: adminPassword,
     admin: true,
     email: 'example1111111@com',
-  })
-  const user = new User({
+  }).save()
+  await new User({
     username: 'usernameNew',
     passwordHash: userPassword,
     admin: false,
     email: 'examples55555@com',
-  })
-  await admin.save()
-  await user.save()
+  }).save()
 })
 
 describe('bacteria format', () => {
