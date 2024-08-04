@@ -19,31 +19,30 @@ const initialBacteria = [
     name: 'tetanus',
   },
 ]
+describe('bacteria tests', () => {
+  beforeEach(async () => {
+    await Case.deleteMany({})
+    await Test.deleteMany({})
+    await Bacterium.deleteMany({})
+    await User.deleteMany({})
+    await new Bacterium(initialBacteria[0]).save()
+    await new Bacterium(initialBacteria[1]).save()
+    const adminPassword = await bcrypt.hash('admin', 10)
+    const userPassword = await bcrypt.hash('password', 10)
+    await new User({
+      username: 'adminNewBac',
+      passwordHash: adminPassword,
+      admin: true,
+      email: 'exampleAdnubg@com',
+    }).save()
+    await new User({
+      username: 'usernameNewBac',
+      passwordHash: userPassword,
+      admin: false,
+      email: 'exampleUser@com',
+    }).save()
+  })
 
-beforeEach(async () => {
-  await Case.deleteMany({})
-  await Test.deleteMany({})
-  await Bacterium.deleteMany({})
-  await User.deleteMany({})
-  await new Bacterium(initialBacteria[0]).save()
-  await new Bacterium(initialBacteria[1]).save()
-  const adminPassword = await bcrypt.hash('admin', 10)
-  const userPassword = await bcrypt.hash('password', 10)
-  await new User({
-    username: 'adminNewBac',
-    passwordHash: adminPassword,
-    admin: true,
-    email: 'exampleAdnubg@com',
-  }).save()
-  await new User({
-    username: 'usernameNewBac',
-    passwordHash: userPassword,
-    admin: false,
-    email: 'exampleUser@com',
-  }).save()
-})
-
-describe('bacteria format', () => {
   test('bacteria are returned as json', async () => {
     const user = await api
       .post('/api/user/login')
@@ -58,9 +57,6 @@ describe('bacteria format', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
-})
-
-describe('addition of a bacterium ', () => {
   test('admin can add a bacterium', async () => {
     const user = await api.post('/api/user/login').send({
       username: 'adminNewBac',
@@ -156,9 +152,7 @@ describe('addition of a bacterium ', () => {
     const resAfterAdding = await api.get('/api/bacteria').set('Authorization', `bearer ${adminUser.body.token}`)
     assert.strictEqual(resAfterAdding.body.length, initialLength)
   })
-})
 
-describe('deletion of a bacterium', () => {
   test('admin can delete a bacterium', async () => {
     const user = await api.post('/api/user/login').send({
       username: 'adminNewBac',
@@ -166,9 +160,7 @@ describe('deletion of a bacterium', () => {
     })
     const res = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
     const initialLength = res.body.length
-    const newBacterium = {
-      name: 'testing bacterium',
-    }
+    const newBacterium = { name: 'testing bacterium for deletion' }
     await api
       .post('/api/bacteria')
       .set('Authorization', `bearer ${user.body.token}`)
@@ -213,30 +205,21 @@ describe('deletion of a bacterium', () => {
     })
     const res = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
     const initialLength = res.body.length
-    const newBacterium = {
-      name: 'testing bacterium',
-    }
-    await api
-      .post('/api/bacteria')
-      .set('Authorization', `bearer ${user.body.token}`)
-      .send(newBacterium)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
-    const resAfterAdding = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
-    assert.strictEqual(resAfterAdding.body.length, initialLength + 1)
+    const resBefore = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
+    assert.strictEqual(resBefore.body.length, initialLength)
     await Test({
       name: 'testTest',
       type: 'testType',
-      bacteriaSpecificImages: [{ bacterium: resAfterAdding.body[0].id, contentType: 'image' }],
+      bacteriaSpecificImages: [{ bacterium: resBefore.body[0].id, contentType: 'image' }],
     }).save()
     const deletionRes = await api
-      .delete(`/api/bacteria/${resAfterAdding.body[0].id}`)
+      .delete(`/api/bacteria/${resBefore.body[0].id}`)
       .set('Authorization', `bearer ${user.body.token}`)
       .expect(400)
       .expect('Content-Type', /application\/json/)
     assert.match(deletionRes.body.error, /Bakteeri on käytössä testissä eikä sitä voi poistaa./)
     const resAfterDelete = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
-    assert.strictEqual(resAfterDelete.body.length, initialLength + 1)
+    assert.strictEqual(resAfterDelete.body.length, initialLength)
   })
 
   test('admin cannot delete a bacterium if it is used in case', async () => {
@@ -272,9 +255,7 @@ describe('deletion of a bacterium', () => {
     const resAfterDelete = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
     assert.strictEqual(resAfterDelete.body.length, initialLength + 1)
   })
-})
 
-describe('modifying a bacterium', () => {
   test('admin can modify an existing bacterium', async () => {
     const user = await api.post('/api/user/login').send({
       username: 'adminNewBac',
