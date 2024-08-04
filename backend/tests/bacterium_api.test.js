@@ -62,15 +62,13 @@ describe('bacteria tests', () => {
       username: 'adminNewBac',
       password: 'admin',
     })
+    console.log(user)
     const res = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
     const initialLength = res.body.length
-    const newBacterium = {
-      name: 'testing bacterium',
-    }
     await api
       .post('/api/bacteria')
       .set('Authorization', `bearer ${user.body.token}`)
-      .send(newBacterium)
+      .send({ name: 'testing bacterium' })
       .expect(201)
       .expect('Content-Type', /application\/json/)
     const resAfterAdding = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
@@ -207,7 +205,7 @@ describe('bacteria tests', () => {
     const initialLength = res.body.length
     const resBefore = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
     assert.strictEqual(resBefore.body.length, initialLength)
-    await Test({
+    await new Test({
       name: 'testTest',
       type: 'testType',
       bacteriaSpecificImages: [{ bacterium: resBefore.body[0].id, contentType: 'image' }],
@@ -240,7 +238,7 @@ describe('bacteria tests', () => {
       .expect('Content-Type', /application\/json/)
     const resAfterAdding = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
     assert.strictEqual(resAfterAdding.body.length, initialLength + 1)
-    await Case({
+    await new Case({
       name: 'testCase',
       type: 'testType',
       anamnesis: 'test anamnesis',
@@ -302,7 +300,7 @@ describe('bacteria tests', () => {
     const updatedBacterium = await api
       .put(`/api/bacteria/${bacteriumToUpdate.id}`)
       .set('Authorization', `bearer ${user.body.token}`)
-      .send({ id: bacteriumToUpdate.id, name: 'tetanus' })
+      .send({ ...bacteriumToUpdate, name: 'tetanus' })
       .expect(400)
       .expect('Content-Type', /application\/json/)
 
