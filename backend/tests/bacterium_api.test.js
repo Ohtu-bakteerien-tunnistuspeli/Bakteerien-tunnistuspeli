@@ -30,16 +30,16 @@ beforeEach(async () => {
   const adminPassword = await bcrypt.hash('admin', 10)
   const userPassword = await bcrypt.hash('password', 10)
   await new User({
-    username: 'adminNew',
+    username: 'adminNewBac',
     passwordHash: adminPassword,
     admin: true,
-    email: 'example1111111@com',
+    email: 'exampleAdnubg@com',
   }).save()
   await new User({
-    username: 'usernameNew',
+    username: 'usernameNewBac',
     passwordHash: userPassword,
     admin: false,
-    email: 'examples55555@com',
+    email: 'exampleUser@com',
   }).save()
 })
 
@@ -48,7 +48,7 @@ describe('bacteria format', () => {
     const user = await api
       .post('/api/user/login')
       .send({
-        username: 'adminNew',
+        username: 'adminNewBac',
         password: 'admin',
       })
       .expect(200)
@@ -63,7 +63,7 @@ describe('bacteria format', () => {
 describe('addition of a bacterium ', () => {
   test('admin can add a bacterium', async () => {
     const user = await api.post('/api/user/login').send({
-      username: 'adminNew',
+      username: 'adminNewBac',
       password: 'admin',
     })
     const res = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
@@ -83,7 +83,7 @@ describe('addition of a bacterium ', () => {
 
   test('an invalid bacterium is not added and returns error message', async () => {
     const user = await api.post('/api/user/login').send({
-      username: 'adminNew',
+      username: 'adminNewBac',
       password: 'admin',
     })
     const res = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
@@ -134,11 +134,11 @@ describe('addition of a bacterium ', () => {
 
   test('user cannot add a bacterium', async () => {
     const adminUser = await api.post('/api/user/login').send({
-      username: 'adminNew',
+      username: 'adminNewBac',
       password: 'admin',
     })
     const user = await api.post('/api/user/login').send({
-      username: 'usernameNew',
+      username: 'usernameNewBac',
       password: 'password',
     })
     const res = await api.get('/api/bacteria').set('Authorization', `bearer ${adminUser.body.token}`)
@@ -161,7 +161,7 @@ describe('addition of a bacterium ', () => {
 describe('deletion of a bacterium', () => {
   test('admin can delete a bacterium', async () => {
     const user = await api.post('/api/user/login').send({
-      username: 'adminNew',
+      username: 'adminNewBac',
       password: 'admin',
     })
     const res = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
@@ -187,11 +187,11 @@ describe('deletion of a bacterium', () => {
 
   test('user cannot delete a bacterium', async () => {
     const user = await api.post('/api/user/login').send({
-      username: 'usernameNew',
+      username: 'usernameNewBac',
       password: 'password',
     })
     const adminUser = await api.post('/api/user/login').send({
-      username: 'adminNew',
+      username: 'adminNewBac',
       password: 'admin',
     })
     const res = await api.get('/api/bacteria').set('Authorization', `bearer ${adminUser.body.token}`)
@@ -208,7 +208,7 @@ describe('deletion of a bacterium', () => {
 
   test('admin cannot delete a bacterium if it is used in test', async () => {
     const user = await api.post('/api/user/login').send({
-      username: 'adminNew',
+      username: 'adminNewBac',
       password: 'admin',
     })
     const res = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
@@ -241,7 +241,7 @@ describe('deletion of a bacterium', () => {
 
   test('admin cannot delete a bacterium if it is used in case', async () => {
     const user = await api.post('/api/user/login').send({
-      username: 'adminNew',
+      username: 'adminNewBac',
       password: 'admin',
     })
     const res = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
@@ -277,7 +277,7 @@ describe('deletion of a bacterium', () => {
 describe('modifying a bacterium', () => {
   test('admin can modify an existing bacterium', async () => {
     const user = await api.post('/api/user/login').send({
-      username: 'adminNew',
+      username: 'adminNewBac',
       password: 'admin',
     })
 
@@ -294,7 +294,7 @@ describe('modifying a bacterium', () => {
 
   test('user cannot modify an existing bacterium', async () => {
     const user = await api.post('/api/user/login').send({
-      username: 'usernameNew',
+      username: 'usernameNewBac',
       password: 'password',
     })
 
@@ -313,7 +313,7 @@ describe('modifying a bacterium', () => {
 
   test('if name is not unique, error is returned', async () => {
     const user = await api.post('/api/user/login').send({
-      username: 'adminNew',
+      username: 'adminNewBac',
       password: 'admin',
     })
 
@@ -330,7 +330,7 @@ describe('modifying a bacterium', () => {
 
   test('cannot modify bacterium that does not exist', async () => {
     const user = await api.post('/api/user/login').send({
-      username: 'adminNew',
+      username: 'adminNewBac',
       password: 'admin',
     })
     const bacteriumToUpdate = { name: 'newBacterium' }
