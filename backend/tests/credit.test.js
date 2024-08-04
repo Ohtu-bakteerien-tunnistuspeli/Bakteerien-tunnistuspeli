@@ -32,18 +32,33 @@ beforeEach(async () => {
 
   // Create users
   const adminPwd = await bcrypt.hash('admin', 10)
-  const admin = new User({ username: 'adminNew', passwordHash: adminPwd, admin: true, email: 'example666@com' })
-  await admin.save()
+  await new User({ username: 'adminNew', passwordHash: adminPwd, admin: true, email: 'example666@com' }).save()
 
   const userPwd = await bcrypt.hash('user', 10)
-  let user = new User({ username: 'user1New', passwordHash: userPwd, admin: false, email: 'example1@com' })
-  user1 = await user.save()
-  user = new User({ username: 'user2New', passwordHash: userPwd, admin: false, email: 'example2@com' })
-  await user.save()
-  user = new User({ username: 'user3New', passwordHash: userPwd, admin: false, email: 'example3@com' })
-  user3 = await user.save()
-  user = new User({ username: 'user4New', passwordHash: userPwd, admin: false, email: 'example4@com' })
-  user4 = await user.save()
+  const user1 = await new User({
+    username: 'user1New',
+    passwordHash: userPwd,
+    admin: false,
+    email: 'example1@com',
+  }).save()
+  await new User({
+    username: 'user2New',
+    passwordHash: userPwd,
+    admin: false,
+    email: 'example2@com',
+  }).save()
+  const user3 = await new User({
+    username: 'user3New',
+    passwordHash: userPwd,
+    admin: false,
+    email: 'example3@com',
+  }).save()
+  const user4 = await new User({
+    username: 'user4New',
+    passwordHash: userPwd,
+    admin: false,
+    email: 'example4@com',
+  }).save()
 
   // Get tokens
   let loginRes = await api.post('/api/user/login').send({
@@ -63,21 +78,18 @@ beforeEach(async () => {
   user2Token = loginRes.body.token
 
   // Save credits
-  const user1Credits = new Credit({
+  await new Credit({
     user: user1.id,
     testCases: ['Maitotila 2', 'Maitotila 4'],
-  })
-  await user1Credits.save()
-  const user3Credits = new Credit({
+  }).save()
+  await new Credit({
     user: user3.id,
     testCases: ['Maitotila 7', 'Maitotila 9'],
-  })
-  await user3Credits.save()
-  const user4Credits = new Credit({
+  }).save()
+  await new Credit({
     user: user4.id,
     testCases: ['Maitotila 4', 'Maitotila 7'],
-  })
-  await user4Credits.save()
+  }).save()
 
   // Create case
   const initialBacterium = new Bacterium({
@@ -96,13 +108,12 @@ beforeEach(async () => {
     },
   ]
 
-  const initialTest = new Test({
+  const initialTest = await new Test({
     name: 'testForCase',
     type: 'Viljely',
-  })
-  const addedTest = await initialTest.save()
+  }).save()
 
-  const initialCase = new Case({
+  await new Case({
     name: 'Maitotila 11',
     anamnesis: 'Anamneesi',
     bacterium: addedBacterium,
@@ -112,7 +123,7 @@ beforeEach(async () => {
         {
           tests: [
             {
-              test: addedTest,
+              test: initialTest,
               positive: true,
             },
           ],
@@ -120,8 +131,7 @@ beforeEach(async () => {
         },
       ],
     ],
-  })
-  caseAdded = await initialCase.save()
+  }).save()
 })
 
 describe('getting credits', () => {

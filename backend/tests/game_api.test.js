@@ -18,35 +18,23 @@ beforeEach(async () => {
   await Case.deleteMany({})
   const adminPassword = await bcrypt.hash('admin', 10)
   const userPassword = await bcrypt.hash('password', 10)
-  const admin = new User({ username: 'adminNew', passwordHash: adminPassword, admin: true, email: 'example11111@com' })
-  const user = new User({
+  await new User({ username: 'adminNew', passwordHash: adminPassword, admin: true, email: 'example11111@com' }).save()
+  await new User({
     username: 'usernameNew',
     passwordHash: userPassword,
     admin: false,
     email: 'example22222@com',
-  })
-  await admin.save()
-  await user.save()
-  const bacterium = new Bacterium({ name: 'Streptococcus agalactiaee' })
-  await bacterium.save()
-  const veriagar = new Test({ name: 'Veriagar, +37 C, aerobinen kasvatuss', type: 'Viljely' })
-  await veriagar.save()
-  const gram = new Test({ name: 'Gramvärjäyss', type: 'Värjäys' })
-  await gram.save()
-  const katalaasi = new Test({ name: 'Katalaasitestii', type: 'Testi' })
-  await katalaasi.save()
-  const hirs = new Test({ name: 'HIRS-sarjaa', type: 'Testi' })
-  await hirs.save()
-  const eskuliini = new Test({ name: 'Eskuliiniveriagarr', type: 'Viljely' })
-  await eskuliini.save()
-  const edwards = new Test({ name: 'Edwardsin agarr', type: 'Viljely' })
-  await edwards.save()
-  const camp = new Test({ name: 'CAMP-testii', type: 'Testi' })
-  await camp.save()
-  const lancefield = new Test({ name: 'Lancefield määrityss', type: 'Testi' })
-  await lancefield.save()
-  const penisilliini = new Test({ name: 'Penisilliinin sietokoe agarvaluamenetelmällää', type: 'Testi' })
-  await penisilliini.save()
+  }).save()
+  const bacterium = await new Bacterium({ name: 'Streptococcus agalactiaee' }).save()
+  const veriagar = await new Test({ name: 'Veriagar, +37 C, aerobinen kasvatuss', type: 'Viljely' }).save()
+  const gram = await new Test({ name: 'Gramvärjäyss', type: 'Värjäys' }).save()
+  const katalaasi = await new Test({ name: 'Katalaasitestii', type: 'Testi' }).save()
+  const hirs = await new Test({ name: 'HIRS-sarjaa', type: 'Testi' }).save()
+  const eskuliini = await new Test({ name: 'Eskuliiniveriagarr', type: 'Viljely' }).save()
+  const edwards = await new Test({ name: 'Edwardsin agarr', type: 'Viljely' }).save()
+  const camp = await new Test({ name: 'CAMP-testii', type: 'Testi' }).save()
+  const lancefield = await new Test({ name: 'Lancefield määrityss', type: 'Testi' }).save()
+  const penisilliini = await new Test({ name: 'Penisilliinin sietokoe agarvaluamenetelmällää', type: 'Testi' }).save()
 
   const textForAnamesis =
     'Tilalla on 27 lypsävää lehmää parsinavetassa ja lisäksi nuorkarjaa. Kuivikkeena käytetään kutteria, vesi tulee omasta kaivosta. Pääosa lehmistä on omaa tuotantoa, mutta navetan laajennuksen yhteydessä edellisenä kesänä hankittiin muutama uusi tiine eläin, jotka poikivat loppusyksystä.'

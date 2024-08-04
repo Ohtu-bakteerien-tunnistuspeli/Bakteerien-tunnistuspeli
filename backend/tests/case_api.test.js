@@ -34,20 +34,18 @@ beforeEach(async () => {
   await Promise.all(promiseArray)
   const adminPassword = await bcrypt.hash('admin', 10)
   const userPassword = await bcrypt.hash('password', 10)
-  const admin = new User({
+  await new User({
     username: 'adminNew',
     passwordHash: adminPassword,
     admin: true,
     email: 'exampless1111111111@com',
-  })
-  const user = new User({
+  }).save()
+  await new User({
     username: 'usernameNew',
     passwordHash: userPassword,
     admin: false,
     email: 'examples444444@com',
-  })
-  await admin.save()
-  await user.save()
+  }).save()
   await Test(initialTest).save()
 })
 

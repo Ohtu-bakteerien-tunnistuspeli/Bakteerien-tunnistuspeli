@@ -118,8 +118,7 @@ beforeEach(async () => {
   await Case.deleteMany({})
   // Create admin
   const adminPassword = await bcrypt.hash('admin', 10)
-  const admin = new User({ username: 'adminNew', passwordHash: adminPassword, admin: true, email: 'example333333@com' })
-  await admin.save()
+  await new User({ username: 'adminNew', passwordHash: adminPassword, admin: true, email: 'example333333@com' }).save()
 
   const addedTests = initialTests.map(test => new Test(test))
   await Test.insertMany(addedTests)
@@ -128,7 +127,7 @@ beforeEach(async () => {
   // Add initial bacterium
   const initialBacterium = await new Bacterium(initialBacteriumForCase).save()
   // Add initial case
-  const caseToAdd = new Case({
+  await new Case({
     name: 'Test case',
     anamnesis: 'Test case',
     bacterium: initialBacterium,
@@ -190,8 +189,7 @@ beforeEach(async () => {
         hint: 'test hint',
       },
     ],
-  })
-  await caseToAdd.save()
+  }).save()
 })
 
 describe('it is possible to do tests', () => {

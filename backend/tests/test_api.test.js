@@ -21,15 +21,13 @@ beforeEach(async () => {
   await User.deleteMany({})
   await Test.deleteMany({})
   await Case.deleteMany({})
-  const testObjects = initialTestCases.map(test => new Test(test))
+  const testObjects = initialTestCases.map(test => new Test(test).save())
   const promiseArray = testObjects.map(test => test.save())
   await Promise.all(promiseArray)
   const adminPassword = await bcrypt.hash('admin', 10)
-  const admin = new User({ username: 'adminNew', passwordHash: adminPassword, admin: true, email: 'example111111@com' })
-  await admin.save()
+  await new User({ username: 'adminNew', passwordHash: adminPassword, admin: true, email: 'example111111@com' }).save()
   const userPassword = await bcrypt.hash('user', 10)
-  const user = new User({ username: 'userNew', passwordHash: userPassword, admin: false, email: 'examples1@com' })
-  await user.save()
+  await new User({ username: 'userNew', passwordHash: userPassword, admin: false, email: 'examples1@com' }).save()
 })
 
 describe('test format', () => {
