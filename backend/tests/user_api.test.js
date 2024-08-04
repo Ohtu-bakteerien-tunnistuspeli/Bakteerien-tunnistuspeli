@@ -9,27 +9,25 @@ const bcrypt = require('bcrypt')
 const api = supertest(app)
 
 beforeEach(async () => {
-  await User.deleteMany({}).exec()
+  await User.deleteMany({})
   const adminPassword = await bcrypt.hash('admin', 10)
   const userPassword = await bcrypt.hash('password', 10)
-  const admin = new User({
+  await new User({
     username: 'adminNew',
     passwordHash: adminPassword,
     admin: true,
     email: 'example11@com',
     studentNumber: '',
     classGroup: '',
-  })
-  const user = new User({
+  }).save()
+  await new User({
     username: 'usernameNew',
     passwordHash: userPassword,
     admin: false,
     email: 'examples111@com',
     studentNumber: '7897089',
     classGroup: 'C-122',
-  })
-  await admin.save()
-  await user.save()
+  }).save()
 })
 
 describe('login ', () => {
