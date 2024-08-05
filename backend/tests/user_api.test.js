@@ -8,7 +8,7 @@ const Credit = require('../models/credit')
 const bcrypt = require('bcrypt')
 const api = supertest(app)
 
-describe('user ', () => {
+describe('user ', async () => {
   beforeEach(async () => {
     await User.deleteMany({})
     const adminPassword = await bcrypt.hash('admin', 10)
@@ -968,5 +968,4 @@ describe('user ', () => {
 
 after(async () => {
   await mongoose.connection.close()
-  await mongoose.disconnect()
 })

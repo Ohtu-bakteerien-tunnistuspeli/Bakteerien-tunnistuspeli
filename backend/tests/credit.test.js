@@ -279,5 +279,5 @@ describe('deleting credits', () => {
 
 after(async () => {
   await mongoose.connection.close()
-  await mongoose.disconnect()
+  
 })

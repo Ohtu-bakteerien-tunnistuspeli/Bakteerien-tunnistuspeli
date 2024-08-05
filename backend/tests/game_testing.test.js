@@ -108,7 +108,7 @@ const getTests = async () => {
   }
   return testMap
 }
-describe('game testing', () => {
+describe('game testing', async () => {
   beforeEach(async () => {
     // Clean db
     await Case.deleteMany({})
@@ -542,5 +542,4 @@ describe('game testing', () => {
 
 after(async () => {
   await mongoose.connection.close()
-  await mongoose.disconnect()
 })

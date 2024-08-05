@@ -14,28 +14,8 @@ if (
   const testingRouter = require('./controllers/testing')
   app.use('/api/testing', testingRouter)
 }
-if (process.env.NODE_ENV === 'test') {
-  const { MongoMemoryServer } = require('mongodb-memory-server')
-  const mongoServer = new MongoMemoryServer()
-  mongoose.Promise = Promise
-  mongoServer
-    .getUri()
-    .then(mongoUri => {
-      mongoose.set('strictQuery', false)
-      mongoose.connect(mongoUri)
-      mongoose.connection.on('error', error => {
-        if (error.message.code === 'ETIMEDOUT') {
-          logger.error(error)
-          mongoose.connect(mongoUri)
-        }
-        logger.error(error)
-      })
-      mongoose.connection.once('open', async () => {
-        logger.info(`MongoDB successfully connected to ${mongoUri}`)
-      })
-    })
-    .catch(error => logger.error(error))
-} else if (process.env.NODE_ENV === 'development') {
+
+if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
   const { MongoMemoryServer } = require('mongodb-memory-server')
   const mongoServer = new MongoMemoryServer()
   const User = require('./models/user')
@@ -44,7 +24,7 @@ if (process.env.NODE_ENV === 'test') {
   const Case = require('./models/case')
   const Credit = require('./models/credit')
   const bcrypt = require('bcrypt')
-  mongoose.Promise = Promise
+
   mongoServer
     .getUri()
     .then(mongoUri => {

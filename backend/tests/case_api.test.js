@@ -11,7 +11,7 @@ const User = require('../models/user')
 const Test = require('../models/testCase')
 const Case = require('../models/case')
 
-describe('Case ', () => {
+describe('Case ', async () => {
   const initialBacteria = [
     {
       name: 'koli',
@@ -999,5 +999,4 @@ describe('Case ', () => {
 
 after(async () => {
   await mongoose.connection.close()
-  await mongoose.disconnect()
 })

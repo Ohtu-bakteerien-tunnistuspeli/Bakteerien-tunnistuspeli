@@ -11,7 +11,7 @@ const User = require('../models/user')
 const Test = require('../models/testCase')
 const Case = require('../models/case')
 
-describe('tests', () => {
+describe('tests', async () => {
   const initialTestCases = [
     { name: 'test1', type: 'type1' },
     { name: 'test2', type: 'type2' },
@@ -407,5 +407,4 @@ describe('tests', () => {
 
 after(async () => {
   await mongoose.connection.close()
-  await mongoose.disconnect()
 })

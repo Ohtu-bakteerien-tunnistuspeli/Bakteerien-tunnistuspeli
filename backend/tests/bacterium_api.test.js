@@ -19,7 +19,7 @@ const initialBacteria = [
     name: 'tetanus',
   },
 ]
-describe('bacteria tests', () => {
+describe('bacteria tests', async () => {
   beforeEach(async () => {
     await Case.deleteMany({})
     await Test.deleteMany({})
@@ -53,7 +53,7 @@ describe('bacteria tests', () => {
       .expect(200)
     await api
       .get('/api/bacteria')
-      .set('Authorization', `bearer ${user.body.token}`)
+      .set('authorization', `bearer ${user.body.token}`)
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
@@ -62,7 +62,6 @@ describe('bacteria tests', () => {
       username: 'adminNewBac',
       password: 'admin',
     })
-    console.log(user.body)
     const res = await api.get('/api/bacteria').set('Authorization', `bearer ${user.body.token}`)
     const initialLength = res.body.length
     await api
@@ -325,5 +324,4 @@ describe('bacteria tests', () => {
 
 after(async () => {
   await mongoose.connection.close()
-  await mongoose.disconnect()
 })
