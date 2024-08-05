@@ -12,7 +12,7 @@
     "test-gh-user": "NODE_ENV=testserver node --test  -- './tests/user_api.test.js'",
     "test-gh-game": "NODE_ENV=testserver node --test  -- './tests/game_api.test.js'",
     "test-gh-game-testing": "NODE_ENV=testserver node --test  -- './tests/game-testing.test.js'",
-    "test-gh-credit": "NODE_ENV=testserver node --test  -- './tests/credit_api.test.js'",
+    "test-gh-credit": "NODE_ENV=testserver node --test  -- './tests/credit.test.js'",
     "test-gh-case": "NODE_ENV=testserver node --test -- './tests/case_api.test.js'",
     "build:ui": "rm -rf build && cd ../frontend && npm run build --prod && cp -r build ../backend",
     "lint": "eslint .",
