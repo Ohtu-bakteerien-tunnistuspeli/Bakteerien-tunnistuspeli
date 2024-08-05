@@ -69,6 +69,9 @@ jobs:
     - run: npm ci 
     - run: npm run library
     - run: npm run test-gh-bacterium
+      env: 
+        SECRET: ${{ secrets.SECRET }}
+        IMAGEURL: 'images'
     - run: npm run test-gh-test
     - run: npm run test-gh-user
     - run: npm run test-gh-credit
