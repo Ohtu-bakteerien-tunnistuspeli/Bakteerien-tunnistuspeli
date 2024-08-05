@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [22]
+        node-version: [20]
         mongodb-version: [4.4.0]
 
     steps:
@@ -54,7 +54,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [22]
+        node-version: [20]
         mongodb-version: [4.4.0]
     steps:
     - uses: actions/checkout@v4
@@ -68,13 +68,7 @@ jobs:
         mongodb-version: ${{ matrix.mongodb-version }}
     - run: npm ci 
     - run: npm run library
-    - run: npm run test-githubactions -- ./tests/bacterium_api.test.js
-    - run: npm run test-githubactions -- ./tests/test_api.test.js
-    - run: npm run test-githubactions -- ./tests/user_api.test.js
-    - run: npm run test-githubactions -- ./tests/credit_api.test.js
-    - run: npm run test-githubactions -- ./tests/game_api.test.js
-    - run: npm run test-githubactions -- ./tests/case_api.test.js
-    - run: npm run test-githubactions -- ./tests/game_testing.test.js
+    - run: npm run test-githubactions
       env: 
         SECRET: ${{ secrets.SECRET }}
         IMAGEURL: 'images'
