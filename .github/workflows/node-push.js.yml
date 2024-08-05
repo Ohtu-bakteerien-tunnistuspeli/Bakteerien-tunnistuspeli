@@ -68,13 +68,13 @@ jobs:
         mongodb-version: ${{ matrix.mongodb-version }}
     - run: npm ci 
     - run: npm run library
-    - run: NODE_ENV=testserver node --test tests/bacterium_api.test.js 
-    - run: NODE_ENV=testserver node --test tests/test_api.test.js
-    - run: NODE_ENV=testserver node --test tests/user_api.test.js
-    - run: NODE_ENV=testserver node --test tests/case_api.test.js
-    - run: NODE_ENV=testserver node --test tests/game_testing.test.js
-    - run: NODE_ENV=testserver node --test tests/credit_api.test.js
-    - run: NODE_ENV=testserver node --test tests/bacterium_api.test.js
+    - run: npm run test-gh-bacterium
+    - run: npm run test-gh-test
+    - run: npm run test-gh-user
+    - run: npm run test-gh-game
+    - run: npm run test-gh-game-testing
+    - run: npm run test-gh-credit
+    - run: npm run test-gh-case
       env: 
         SECRET: ${{ secrets.SECRET }}
         IMAGEURL: 'images'
