@@ -44,105 +44,104 @@ const findCaseId = async () => {
   const addedCase = await Case.findOne({ name: 'Maitotila 11' })
   return addedCase._id
 }
+describe('credits', async () => {
+  beforeEach(async () => {
+    await Case.deleteMany({})
+    await Test.deleteMany({})
+    await Bacterium.deleteMany({})
+    await Credit.deleteMany({})
+    await User.deleteMany({})
 
-beforeEach(async () => {
-  await Case.deleteMany({})
-  await Test.deleteMany({})
-  await Bacterium.deleteMany({})
-  await Credit.deleteMany({})
-  await User.deleteMany({})
+    // Create users
+    const adminPwd = await bcrypt.hash('adminadmin', 10)
+    await new User({ username: 'adminNew', passwordHash: adminPwd, admin: true, email: 'example666@com' }).save()
 
-  // Create users
-  const adminPwd = await bcrypt.hash('adminadmin', 10)
-  await new User({ username: 'adminNew', passwordHash: adminPwd, admin: true, email: 'example666@com' }).save()
+    const userPwd = await bcrypt.hash('useruser', 10)
+    let user1 = await new User({
+      username: 'user1New',
+      passwordHash: userPwd,
+      admin: false,
+      email: 'example1@com',
+    })
+    user1 = await user1.save()
+    await new User({
+      username: 'user2New',
+      passwordHash: userPwd,
+      admin: false,
+      email: 'example2@com',
+    }).save()
+    let user3 = await new User({
+      username: 'user3New',
+      passwordHash: userPwd,
+      admin: false,
+      email: 'example3@com',
+    })
+    user3 = await user3.save()
+    const user4 = await new User({
+      username: 'user4New',
+      passwordHash: userPwd,
+      admin: false,
+      email: 'example4@com',
+    })
+    user4.save()
 
-  const userPwd = await bcrypt.hash('useruser', 10)
-  let user1 = await new User({
-    username: 'user1New',
-    passwordHash: userPwd,
-    admin: false,
-    email: 'example1@com',
-  })
-  user1 = await user1.save()
-  await new User({
-    username: 'user2New',
-    passwordHash: userPwd,
-    admin: false,
-    email: 'example2@com',
-  }).save()
-  let user3 = await new User({
-    username: 'user3New',
-    passwordHash: userPwd,
-    admin: false,
-    email: 'example3@com',
-  })
-  user3 = await user3.save()
-  const user4 = await new User({
-    username: 'user4New',
-    passwordHash: userPwd,
-    admin: false,
-    email: 'example4@com',
-  })
-  user4.save()
+    // Save credits
+    await new Credit({
+      user: user1.id,
+      testCases: ['Maitotila 2', 'Maitotila 4'],
+    }).save()
+    await new Credit({
+      user: user3.id,
+      testCases: ['Maitotila 7', 'Maitotila 9'],
+    }).save()
+    await new Credit({
+      user: user4.id,
+      testCases: ['Maitotila 4', 'Maitotila 7'],
+    }).save()
 
-  // Save credits
-  await new Credit({
-    user: user1.id,
-    testCases: ['Maitotila 2', 'Maitotila 4'],
-  }).save()
-  await new Credit({
-    user: user3.id,
-    testCases: ['Maitotila 7', 'Maitotila 9'],
-  }).save()
-  await new Credit({
-    user: user4.id,
-    testCases: ['Maitotila 4', 'Maitotila 7'],
-  }).save()
+    // Create case
+    const initialBacterium = new Bacterium({
+      name: 'test bacterium',
+    })
+    const addedBacterium = await initialBacterium.save()
 
-  // Create case
-  const initialBacterium = new Bacterium({
-    name: 'test bacterium',
-  })
-  const addedBacterium = await initialBacterium.save()
+    const initialSamples = [
+      {
+        description: 'Sample1',
+        rightAnswer: true,
+      },
+      {
+        description: 'Sample2',
+        rightAnswer: false,
+      },
+    ]
 
-  const initialSamples = [
-    {
-      description: 'Sample1',
-      rightAnswer: true,
-    },
-    {
-      description: 'Sample2',
-      rightAnswer: false,
-    },
-  ]
+    const initialTest = await new Test({
+      name: 'testForCase',
+      type: 'Viljely',
+    }).save()
 
-  const initialTest = await new Test({
-    name: 'testForCase',
-    type: 'Viljely',
-  }).save()
-
-  await new Case({
-    name: 'Maitotila 11',
-    anamnesis: 'Anamneesi',
-    bacterium: addedBacterium,
-    samples: initialSamples,
-    testGroups: [
-      [
-        {
-          tests: [
-            {
-              test: initialTest,
-              positive: true,
-            },
-          ],
-          isRequired: true,
-        },
+    await new Case({
+      name: 'Maitotila 11',
+      anamnesis: 'Anamneesi',
+      bacterium: addedBacterium,
+      samples: initialSamples,
+      testGroups: [
+        [
+          {
+            tests: [
+              {
+                test: initialTest,
+                positive: true,
+              },
+            ],
+            isRequired: true,
+          },
+        ],
       ],
-    ],
-  }).save()
-})
+    }).save()
+  })
 
-describe('getting credits', () => {
   test('admin can get list of all credits', async () => {
     const admin = await getLoggedInUser(5)
     const creditList = await api
@@ -179,9 +178,7 @@ describe('getting credits', () => {
     assert(creditList.body.map(credit => credit.user.username).includes('user1New'))
     assert.strictEqual(creditList.body.length, 1)
   })
-})
 
-describe('completing cases', () => {
   test('points get correctly stored when completing first case', async () => {
     const user2 = await getLoggedInUser(2)
     const caseId = await findCaseId()
@@ -210,9 +207,7 @@ describe('completing cases', () => {
     casesAfter = casesAfter.body[0].testCases
     assert.strictEqual(casesAfter.length, casesBefore.length + 1)
   })
-})
 
-describe('deleting credits', () => {
   test('admin can delete credits', async () => {
     const user1 = await getLoggedInUser(1)
     const user3 = await getLoggedInUser(3)
@@ -279,5 +274,4 @@ describe('deleting credits', () => {
 
 after(async () => {
   await mongoose.connection.close()
-  
 })
