@@ -7,7 +7,7 @@
     "start": "NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "test": "NODE_ENV=test node -- tests/bacterium_api.test.js",
-    "test-gh-bacterium": " cd ./tests && cross-env NODE_ENV=testserver -- /est/bacterium_api.test.js",
+    "test-gh-bacterium": "cross-env NODE_ENV=testserver -- tests/bacterium_api.test.js",
     "test-gh-test": "cross-env NODE_ENV=testserver -- tests/test_api.test.js",
     "test-gh-user": "cross-env NODE_ENV=testserver -- tests/user_api.test.js",
     "test-gh-game": "cross-env NODE_ENV=testserver -- tests/game_api.test.js",
