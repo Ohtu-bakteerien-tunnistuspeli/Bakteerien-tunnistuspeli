@@ -73,10 +73,25 @@ jobs:
         SECRET: ${{ secrets.SECRET }}
         IMAGEURL: 'images'
     - run: npm run test-gh-test
+      env: 
+        SECRET: ${{ secrets.SECRET }}
+        IMAGEURL: 'images'    
     - run: npm run test-gh-user
+      env: 
+        SECRET: ${{ secrets.SECRET }}
+        IMAGEURL: 'images'
     - run: npm run test-gh-credit
+      env: 
+        SECRET: ${{ secrets.SECRET }}
+        IMAGEURL: 'images'
     - run: npm run test-gh-game
+      env: 
+        SECRET: ${{ secrets.SECRET }}
+        IMAGEURL: 'images'
     - run: npm run test-gh-case
+      env: 
+        SECRET: ${{ secrets.SECRET }}
+        IMAGEURL: 'images'
     - run: npm run test-gh-game-testing
       env: 
         SECRET: ${{ secrets.SECRET }}
