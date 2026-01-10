@@ -69,19 +69,20 @@ caseRouter.get('/', async (request, response) => {
         path: 'hints.test',
         model: 'Test',
       })
-    console.log(cases)
-    cases.map(caseToMap => console.log(caseToMap))
+
+    cases.map( case_ => console.log(case_))
     console.log('map json')
-    cases.map(caseToMap => console.log(caseToMap.toJSON()))
-    response.json(cases.map(caseToMap => caseToMap.toJSON()))
+    cases.map(case_ => console.log(case_._id))
+    cases.map(case_ => console.log(case_.toJSON()))
+    response.json(cases.map(case_ => case_.toJSON()))
   } else if (request.user) {
     const cases = await Case.find({})
     response.json(
       cases
-        .map(caseToMap => caseToMap.toJSON())
+        .map(case_ => case_.toJSON())
         .filter(caseToFilter => caseToFilter.complete)
-        .map(caseToMap => {
-          return { name: caseToMap.name, id: caseToMap.id }
+        .map(case_ => {
+          return { name: case_.name, id: case_.id }
         })
     )
   } else {

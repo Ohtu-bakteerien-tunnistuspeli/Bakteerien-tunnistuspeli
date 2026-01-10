@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
 const { validation } = require('../utils/config')
 const validationCase = validation.case
+
 const caseSchema = mongoose.Schema({
   name: {
     type: String,
@@ -80,11 +81,13 @@ const caseSchema = mongoose.Schema({
 
 caseSchema.set('toJSON', {
   transform: (document, returnedObject) => {
+    console.log(returnedObject)
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
   },
 })
+
 caseSchema.plugin(uniqueValidator, { message: validationCase.name.uniqueMessage })
 const Case = mongoose.model('Case', caseSchema)
 
