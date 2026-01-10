@@ -71,6 +71,7 @@ caseRouter.get('/', async (request, response) => {
       })
     console.log(cases)
     cases.map(caseToMap => console.log(caseToMap))
+    console.log('map json')
     cases.map(caseToMap => console.log(caseToMap.toJSON()))
     response.json(cases.map(caseToMap => caseToMap.toJSON()))
   } else if (request.user) {
