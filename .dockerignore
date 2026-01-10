@@ -11,3 +11,6 @@
 documentation/
 /backend/tests/
 /backend/.prettierrc
+LICENCE
+docker-compose.mongo.yaml
+README.md
