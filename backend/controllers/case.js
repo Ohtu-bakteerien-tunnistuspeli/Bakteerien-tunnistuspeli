@@ -53,7 +53,10 @@ const deleteUploadedImages = request => {
 caseRouter.get('/', async (request, response) => {
   if (request.user && request.user.admin) {
     const cases = await Case.find({})
-      .populate('bacterium', { name: 1 })
+      .populate({
+        path: 'bacterium',
+        model: 'Bacterium',
+      })
       .populate({
         path: 'testGroups.tests.test',
         model: 'Test',
