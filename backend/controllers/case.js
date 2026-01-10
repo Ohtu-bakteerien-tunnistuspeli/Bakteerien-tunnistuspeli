@@ -69,6 +69,7 @@ caseRouter.get('/', async (request, response) => {
         path: 'hints.test',
         model: 'Test',
       })
+    console.log(cases)
     response.json(cases.map(caseToMap => caseToMap.toJSON()))
   } else if (request.user) {
     const cases = await Case.find({})
