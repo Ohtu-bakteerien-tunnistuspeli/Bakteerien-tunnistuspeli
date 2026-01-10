@@ -1,0 +1,12 @@
+services:
+  mongo:
+    image: mongo:4.4.3
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: test
+    ports:
+      - 27017:27017
+    volumes:
+      - ./backend/mongo/mongo_init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ../mongo_data:/data/db

@@ -43,17 +43,11 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "mongodb-memory-server": "^6.9.6",
     "nodemon": "^3.1.4",
     "prettier": "3.3.3",
     "supertest": "^6.3.4"
   },
   "jest": {
     "testEnvironment": "node"
-  },
-  "config": {
-    "mongodbMemoryServer": {
-      "version": "4.4.0"
-    }
   }
 }
