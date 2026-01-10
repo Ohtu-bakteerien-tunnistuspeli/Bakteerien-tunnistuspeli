@@ -53,10 +53,7 @@ const deleteUploadedImages = request => {
 caseRouter.get('/', async (request, response) => {
   if (request.user && request.user.admin) {
     const cases = await Case.find({})
-      .populate({
-        path: 'bacterium',
-        model: 'Bacterium',
-      })
+      .populate('bacterium', { name: 1 })
       .populate({
         path: 'testGroups.tests.test',
         model: 'Test',
@@ -69,20 +66,15 @@ caseRouter.get('/', async (request, response) => {
         path: 'hints.test',
         model: 'Test',
       })
-
-    cases.map( case_ => console.log(case_))
-    console.log('map json')
-    cases.map(case_ => console.log(case_._id))
-    cases.map(case_ => console.log(case_.toJSON()))
-    response.json(cases.map(case_ => case_.toJSON()))
+    response.json(cases.map(caseItem => caseItem.toJSON()))
   } else if (request.user) {
     const cases = await Case.find({})
     response.json(
       cases
-        .map(case_ => case_.toJSON())
+        .map(caseItem => caseItem.toJSON())
         .filter(caseToFilter => caseToFilter.complete)
-        .map(case_ => {
-          return { name: case_.name, id: case_.id }
+        .map(caseItem => {
+          return { name: caseItem.name, id: caseItem.id }
         })
     )
   } else {
