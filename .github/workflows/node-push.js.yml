@@ -55,16 +55,17 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [22]
-        mongodb-version: [4.4.0]
+        node-version: [24]
+        mongodb-version: [4.4.3]
     steps:
     - uses: actions/checkout@v6
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v5
       with:
         node-version: ${{ matrix.node-version }}
+        package-manager-cache: false
     - name: Start MongoDB
-      uses: supercharge/mongodb-github-action@1.11.0
+      uses: supercharge/mongodb-github-action@1.21.1
       with:
         mongodb-version: ${{ matrix.mongodb-version }}
     - run: npm ci 
