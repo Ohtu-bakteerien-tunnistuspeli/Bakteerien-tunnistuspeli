@@ -155,7 +155,7 @@ userRouter.put('/:id/promote', async (request, response) => {
       const updatedUser = await User.findByIdAndUpdate(
         request.params.id,
         { admin: true },
-        { new: true, runValidators: true, context: 'query' }
+        { new: true, runValidators: true }
       )
       return response.status(200).json(updatedUser.toJSON())
     } catch (error) {
@@ -175,7 +175,7 @@ userRouter.put('/:id/demote', async (request, response) => {
       const updatedUser = await User.findByIdAndUpdate(
         request.params.id,
         { admin: false },
-        { new: true, runValidators: true, context: 'query' }
+        { new: true, runValidators: true }
       )
       return response.status(200).json(updatedUser.toJSON())
     } catch (error) {
@@ -242,7 +242,7 @@ userRouter.post('/temporarypassword', async (request, response) => {
       await User.findByIdAndUpdate(
         user.id,
         { temporaryPassword: { passwordHash, generationTime: new Date() } },
-        { new: true, runValidators: true, context: 'query' }
+        { new: true, runValidators: true }
       )
     } catch (error) {
       return response.status(400).json({ error: libraryUser.emailError })
@@ -313,7 +313,6 @@ userRouter.put('/', async (request, response) => {
           const updatedUser = await User.findByIdAndUpdate(user.id, changes, {
             new: true,
             runValidators: true,
-            context: 'query',
           })
           return response.status(200).json(updatedUser.toJSON())
         } else {

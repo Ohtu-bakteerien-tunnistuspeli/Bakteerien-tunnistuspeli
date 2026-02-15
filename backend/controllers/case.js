@@ -313,13 +313,11 @@ caseRouter.put('/:id', upload.fields([{ name: 'completionImage', maxCount: 1 }])
       let updatedCase = await Case.findByIdAndUpdate(request.params.id, changes, {
         new: true,
         runValidators: true,
-        context: 'query',
       })
       let completeChange = { complete: isComplete(updatedCase) }
       updatedCase = await Case.findByIdAndUpdate(request.params.id, completeChange, {
         new: true,
         runValidators: true,
-        context: 'query',
       })
       updatedCase = await Case.findById(request.params.id)
         .populate('bacterium', { name: 1 })

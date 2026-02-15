@@ -240,7 +240,6 @@ testRouter.put(
         const updatetTest = await Test.findByIdAndUpdate(request.params.id, testToUpdate, {
           new: true,
           runValidators: true,
-          context: 'query',
         }).populate({
           path: 'bacteriaSpecificImages.bacterium',
           model: 'Bacterium',

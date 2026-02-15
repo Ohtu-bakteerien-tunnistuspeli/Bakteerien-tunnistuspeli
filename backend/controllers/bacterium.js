@@ -62,7 +62,7 @@ bacteriumRouter.put('/:id', async (request, response) => {
       const updatedBacterium = await Bacterium.findByIdAndUpdate(
         request.params.id,
         { name: request.body.name },
-        { new: true, runValidators: true, context: 'query' }
+        { new: true, runValidators: true }
       )
       return response.status(200).json(updatedBacterium)
     } catch (error) {
