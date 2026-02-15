@@ -65,7 +65,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         package-manager-cache: false
     - name: Start MongoDB
-      uses: supercharge/mongodb-github-action@1.21.1
+      uses: supercharge/mongodb-github-action@1.12.1
       with:
         mongodb-version: ${{ matrix.mongodb-version }}
     - run: npm ci 
