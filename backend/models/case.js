@@ -81,7 +81,7 @@ const caseSchema = mongoose.Schema({
 
 caseSchema.set('toJSON', {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
+    returnedObject.id = returnedObject._id ? returnedObject._id.toString() : returnedObject.id.toString()
     delete returnedObject._id
     delete returnedObject.__v
   },

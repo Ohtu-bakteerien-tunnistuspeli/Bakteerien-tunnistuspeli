@@ -164,4 +164,4 @@ const seed = async () => {
   await initialCase2.save()
 }
 
-module.exports = seed
+module.exports = { seed }
