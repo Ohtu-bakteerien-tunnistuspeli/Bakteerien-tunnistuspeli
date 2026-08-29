@@ -10,6 +10,9 @@ gitignored/
 **/.idea
 **/.zed
 **/coverage/
+**/cypress.config.js
+**/.eslintrc.json
+**/.eslintignore
 **/.eslintcache
 **/.DS_Store
 .gitignore
