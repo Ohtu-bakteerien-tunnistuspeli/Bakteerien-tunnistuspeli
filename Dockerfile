@@ -13,7 +13,8 @@ COPY --chown=node:node  ./backend/ .
 RUN npm ci --omit=dev  && \
     npm run library && \
     npm run build:ui && \
-    rm -rf /app/frontend/node_modules/*
+    rm -rf ../frontend/node_modules/
+    rm -rf --/frontend/src/
 
 USER node
 EXPOSE 3001
