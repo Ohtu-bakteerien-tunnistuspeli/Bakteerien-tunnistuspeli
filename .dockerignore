@@ -74,6 +74,8 @@ gitignored/
 **/cypress/
 **/*Dockerfile
 **/*docker-compose.mongo.yml
+**/README.md
+**/LICENSE
 
 # disallow secrects
 **/.env
@@ -82,6 +84,8 @@ gitignored/
 
 # disallow backups
 **/backups
+# disallow dev seed file
+**/mongo
 
 # additional inclusions here
 **/documentation
