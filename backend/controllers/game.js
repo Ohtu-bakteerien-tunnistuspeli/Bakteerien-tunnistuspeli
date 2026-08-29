@@ -7,7 +7,7 @@ const libraryGame = library.backend.game
 gameRouter.get('/:id', async (request, response) => {
   if (request.user) {
     try {
-      const caseToGet = await Case.findById(request.params.id).select('name anamnesis samples')
+      const caseToGet = await Case.findById(request.params.id).select('name anamnesis samples completionText')
       const samples = caseToGet.samples.map(sample => {
         return { description: sample.description, id: sample._id }
       })
@@ -16,6 +16,7 @@ gameRouter.get('/:id', async (request, response) => {
         samples,
         anamnesis: caseToGet.anamnesis,
         name: caseToGet.name,
+        completionText: caseToGet.completionText,
       }
       response.json(caseToReturn)
     } catch (error) {
