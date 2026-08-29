@@ -67,7 +67,7 @@ caseRouter.get('/', async (request, response) => {
         model: 'Test',
       })
 
-    response.json(cases)
+    response.json(cases.map(caseToStringify => caseToStringify.toJSON()))
   } else if (request.user) {
     const cases = await Case.find({})
     response.json(
@@ -335,7 +335,7 @@ caseRouter.put('/:id', upload.fields([{ name: 'completionImage', maxCount: 1 }])
       for (let i = 0; i < oldLinks.length; i++) {
         fs.unlink(`${imageDir}/${oldLinks[i]}`, error => error)
       }
-      return response.status(200).json(updatedCase)
+      return response.status(200).json(updatedCase.toJSON())
     } catch (error) {
       deleteUploadedImages(request)
       if (error.message.includes('doesnotexist')) {

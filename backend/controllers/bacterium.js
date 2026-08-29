@@ -8,7 +8,7 @@ const libraryBacteria = library.backend.bacterium
 bacteriumRouter.get('/', async (request, response) => {
   if (request.user) {
     const bacteria = await Bacterium.find({})
-    response.json(bacteria)
+    response.json(bacteria.map(bacterium => bacterium.toJSON()))
   } else {
     throw Error('JsonWebTokenError')
   }
