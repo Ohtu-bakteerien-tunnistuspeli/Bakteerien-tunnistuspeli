@@ -14,7 +14,7 @@ RUN npm ci --omit=dev  && \
     npm run library && \
     npm run build:ui && \
     rm -rf ../frontend/node_modules/ && \
-    rm -rf --/frontend/src/
+    rm -rf ../frontend/src/
 
 USER node
 EXPOSE 3001
