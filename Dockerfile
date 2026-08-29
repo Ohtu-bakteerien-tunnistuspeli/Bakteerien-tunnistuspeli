@@ -5,12 +5,12 @@ COPY --chown=node:node ./frontend/ ../frontend/
 COPY --chown=node:node ./lib/ ../lib/
 
 RUN cd ../frontend && \
-       npm ci --production && \
+       npm ci --omit=dev && \
        cd ../backend
 
 COPY --chown=node:node  ./backend/ .
 
-RUN npm ci --production  && \
+RUN npm ci --omit=dev  && \
     npm run library && \
     npm run build:ui && \
     rm -rf /app/frontend/node_modules/*
