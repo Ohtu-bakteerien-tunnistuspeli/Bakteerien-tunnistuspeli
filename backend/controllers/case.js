@@ -67,15 +67,14 @@ caseRouter.get('/', async (request, response) => {
         model: 'Test',
       })
 
-    response.json(cases.map(caseItem => caseItem.toJSON()))
+    response.json(cases)
   } else if (request.user) {
     const cases = await Case.find({})
     response.json(
       cases
-        .map(caseItem => caseItem.toJSON())
         .filter(caseToFilter => caseToFilter.complete)
         .map(caseItem => {
-          return { name: caseItem.name, id: caseItem.id }
+          return { name: caseItem.name, id: caseItem._id }
         })
     )
   } else {

@@ -8,7 +8,6 @@ gameRouter.get('/:id', async (request, response) => {
   if (request.user) {
     try {
       let caseToGet = await Case.findById(request.params.id)
-      caseToGet = caseToGet.toJSON()
       caseToGet.samples = caseToGet.samples.map(sample => {
         return { description: sample.description }
       })
