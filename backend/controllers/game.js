@@ -7,16 +7,17 @@ const libraryGame = library.backend.game
 gameRouter.get('/:id', async (request, response) => {
   if (request.user) {
     try {
-      let caseToGet = await Case.findById(request.params.id)
-      caseToGet.samples = caseToGet.samples.map(sample => {
-        return { description: sample.description }
+      const caseToGet = await Case.findById(request.params.id).select('name anamnesis samples')
+      const samples = caseToGet.samples.map(sample => {
+        return { description: sample.description, id: sample._id }
       })
-      delete caseToGet.bacterium
-      delete caseToGet.complete
-      delete caseToGet.testGroups
-      delete caseToGet.completionImage
-      delete caseToGet.hints
-      response.json(caseToGet)
+      const caseToReturn = {
+        id: caseToGet._id,
+        samples,
+        anamnesis: caseToGet.anamnesis,
+        name: caseToGet.name,
+      }
+      response.json(caseToReturn)
     } catch (error) {
       return response.status(400).json({ error: error.message })
     }
