@@ -73,6 +73,7 @@ gitignored/
 **/cypress.env.json
 **/cypress/
 **/*Dockerfile
+**/tests
 **/*docker-compose.mongo.yml
 **/README.md
 **/LICENSE
