@@ -16,11 +16,11 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [24.x]
+        node-version: [24.22.1]
         mongodb-version: [4.4.3]
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v5
       with:
@@ -38,7 +38,7 @@ jobs:
         PORT: 3001
         IMAGEURL: 'images'
     - name: Cypress run
-      uses: cypress-io/github-action@v5
+      uses: cypress-io/github-action@v7
       with:
         browser: chrome
         working-directory: frontend
