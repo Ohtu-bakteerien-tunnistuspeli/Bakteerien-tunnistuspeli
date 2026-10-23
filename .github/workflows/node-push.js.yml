@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [24]
+        node-version: [24.22.1]
         mongodb-version: [4.4.30]
 
     steps:
@@ -40,7 +40,7 @@ jobs:
     - name: Install cypress
       run: npx cypress install
     - name: Cypress run
-      uses: cypress-io/github-action@v5
+      uses: cypress-io/github-action@v7
       with:
         browser: chrome
         working-directory: frontend
@@ -57,7 +57,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [24]
+        node-version: [24.22.1]
         mongodb-version: [4.4.30]
     steps:
     - uses: actions/checkout@v7
