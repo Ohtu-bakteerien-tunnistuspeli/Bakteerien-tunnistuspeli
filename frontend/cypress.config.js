@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
-const { defineConfig } = require('cypress')
+import { defineConfig } from 'cypress'
 
-module.exports = defineConfig({
+export default defineConfig({
   defaultCommandTimeout: 30000,
   requestTimeout: 30000,
   videoCompression: false,
