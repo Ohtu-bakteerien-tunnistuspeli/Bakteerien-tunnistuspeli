@@ -21,7 +21,7 @@ const UserInfoForm = ({ user }) => {
   const [passwordAgain, setNewPasswordAgain] = useState('')
   const [email, setNewEmail] = useState(user.email)
   const [studentNumber, setNewStudentNumber] = useState(user.studentNumber)
-  const [classGroup, setNewClassgroup] = useState(user.classGroup)
+  const [classGroup, setNewClassgroup] = useState(user.classGroup  || 'C-')
   const [confirmText, setConfirmText] = useState('')
 
   /* states end */
@@ -46,26 +46,26 @@ const UserInfoForm = ({ user }) => {
     const oldPassword = props
     if (password === '' && passwordAgain === '') {
       try {
-        dispatch(updateUserinfo(username, email, studentNumber, `C-${classGroup}`, oldPassword, '', token, handleClose))
+        dispatch(updateUserinfo(username, email, studentNumber, `${classGroup}`, oldPassword, '', token, handleClose))
       } catch (e) {
         return e
       }
     } else if (password === passwordAgain) {
       try {
         dispatch(
-          updateUserinfo(username, email, studentNumber, `C-${classGroup}`, oldPassword, password, token, handleClose)
+          updateUserinfo(username, email, studentNumber, `${classGroup}`, oldPassword, password, token, handleClose)
         )
       } catch (e) {
         return e
       }
     }
   }
-
+  console.log(user.classGroup || 'C-')
   const resetFields = () => {
     setNewUsername(user.username)
     setNewEmail(user.email)
     setNewStudentNumber(user.studentNumber)
-    setNewClassgroup(user.classGroup)
+    setNewClassgroup(user.classGroup ?? 'C-')
     setNewPassword('')
     setNewPasswordAgain('')
     setConfirmText('')
@@ -155,7 +155,7 @@ const UserInfoForm = ({ user }) => {
               password: password,
               passwordAgain: passwordAgain,
               studentNumber: studentNumber,
-              classGroup: classGroup,
+              classGroup: classGroup || 'C-',
             }}
           >
             {({ handleSubmit, errors, setFieldValue, touched, setFieldTouched, values }) => {

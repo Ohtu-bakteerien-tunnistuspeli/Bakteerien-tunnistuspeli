@@ -21,7 +21,7 @@ const Classgroup = ({ classgroup, setClassgroup, onChange, error, touched, setFi
           type="text"
           name={fieldId}
           isInvalid={error && touched}
-          value={classgroup}
+          value={classgroup || 'C-'}
           onChange={handleChange}
         />
         <Form.Control.Feedback type="invalid" hidden={!touched}>
