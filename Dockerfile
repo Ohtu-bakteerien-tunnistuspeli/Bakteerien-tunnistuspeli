@@ -5,7 +5,7 @@ COPY --chown=node:node ./frontend/ ../frontend/
 COPY --chown=node:node ./lib/ ../lib/
 
 RUN cd ../frontend && \
-       npm ci --omit=dev && \
+       npm ci && \
        cd ../backend
 
 COPY --chown=node:node  ./backend/ .
@@ -19,4 +19,4 @@ RUN npm ci --omit=dev  && \
 USER node
 EXPOSE 3001
 
-CMD npm start
+CMD ["npm", "start"]
