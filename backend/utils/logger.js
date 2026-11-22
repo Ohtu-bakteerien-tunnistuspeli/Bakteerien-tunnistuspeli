@@ -6,7 +6,7 @@ transports.push(
     level: 'info',
     format: winston.format.combine(
       winston.format.colorize(),
-      winston.format.timestamp('HH.mm.ss'),
+      winston.format.timestamp('DD.MM.YYYY HH.mm.ss'),
       winston.format.printf(
         ({ timestamp, level, message, error, ...rest }) =>
           `${timestamp} ${level}: ${message}${error ? ` ${error?.stack}` : ''}${rest ? ` ${JSON.stringify(rest)}` : ''}`
