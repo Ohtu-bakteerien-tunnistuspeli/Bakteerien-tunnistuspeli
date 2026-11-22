@@ -1,7 +1,7 @@
 import Validation from '../lib/validation.json'
 import Library from '../lib/library.json'
 
-const reducer = (state = null, action) => {
+const languageReducer = (state = null, action) => {
   switch (action.type) {
     case 'GET_LANGUAGE': {
       return action.data
@@ -21,4 +21,4 @@ export const getLanguage = () => {
   }
 }
 
-export default reducer
+export default languageReducer

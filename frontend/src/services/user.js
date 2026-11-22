@@ -92,4 +92,13 @@ const temporaryPasswordGenerate = credentials => {
     .catch(error => error.response.data)
 }
 
-export default { get, login, register, deleteUser, promote, demote, update, temporaryPasswordGenerate }
+export default {
+  get,
+  login,
+  register,
+  deleteUser,
+  promote,
+  demote,
+  update,
+  temporaryPasswordGenerate,
+}

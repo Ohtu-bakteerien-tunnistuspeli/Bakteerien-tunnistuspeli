@@ -9,7 +9,7 @@ const CaseList = () => {
   const library = useSelector(state => state.language)?.library?.frontend.case.list
   const cases = useSelector(state => state.case)?.sort((case1, case2) => case1.name.localeCompare(case2.name))
   const [casesToShow, setCasesToShow] = useState(cases)
-  const user = useSelector(state => state.user)
+  const user = useSelector(userData => userData.user)
   const [filterByName, setFilterByName] = useState('')
   const dispatch = useDispatch()
   const [timer, setTimer] = useState(null)

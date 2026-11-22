@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { login } from '../../reducers/userReducer'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { Form, Button } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 const Login = () => {
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
   const lib = useSelector(state => state.language)?.library
   const library = lib.frontend.user.login
   const routeLibrary = lib.frontend.routes
@@ -14,7 +14,7 @@ const Login = () => {
     const username = event.target.username.value
     const password = event.target.password.value
     try {
-      dispatch(login(username, password, history))
+      dispatch(login(username, password, navigate))
     } catch (exeption) {
       console.log(library.loginError)
     }

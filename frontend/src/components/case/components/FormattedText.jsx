@@ -1,5 +1,4 @@
 import 'jodit'
-import 'jodit/build/jodit.min.css'
 import JoditEditor from 'jodit-react'
 
 const options = {

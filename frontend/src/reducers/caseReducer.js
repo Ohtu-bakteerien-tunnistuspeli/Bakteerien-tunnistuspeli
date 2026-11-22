@@ -1,7 +1,7 @@
 import caseService from '../services/case'
 import { setNotification } from '../reducers/notificationReducer'
 
-const reducer = (state = [], action) => {
+const caseReducer = (state = [], action) => {
   switch (action.type) {
     case 'GET_CASES': {
       return action.data
@@ -198,11 +198,11 @@ export const updateCaseHints = (id, hints, handleClose, token) => {
 
 export const zeroCase = () => {
   return async dispatch => {
-    await dispatch({
+    dispatch({
       type: 'ZERO_CASE',
       data: [],
     })
   }
 }
 
-export default reducer
+export default caseReducer

@@ -1,18 +1,18 @@
-import ConfirmWindow from './utility/ConfirmWindow.jsx'
+import ConfirmWindow from './utility/ConfirmWindow'
 import { useSelector, useDispatch } from 'react-redux'
-import { deleteUser } from '../reducers/usersReducer.js'
-import { useHistory } from 'react-router-dom'
-import ProfilePageUserInfo from './ProfilePageUserInfo.js'
-import UserinfoForm from './user/UserinfoForm.jsx'
+import { deleteUser } from '../reducers/usersReducer'
+import { useNavigate } from 'react-router'
+import ProfilePageUserInfo from './ProfilePageUserInfo'
+import UserinfoForm from './user/UserinfoForm'
 
 const ProfilePage = () => {
   const library = useSelector(state => state.language)?.library?.frontend.profilePage
-  const user = useSelector(state => state.user)
+  const user = useSelector(userData => userData.user)
   const credits = useSelector(state => state.credit)
-  const history = useHistory()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const userDelete = ({ confirmText, handleClose }) => {
-    dispatch(deleteUser(user, user.token, confirmText, handleClose, history))
+    dispatch(deleteUser(user, user.token, confirmText, handleClose, navigate))
   }
 
   return (

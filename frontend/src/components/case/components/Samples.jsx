@@ -1,4 +1,4 @@
-import Sample from './Sample.js'
+import Sample from './Sample'
 import { Form, Table } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 import '../../../style.css'

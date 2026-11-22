@@ -1,18 +1,18 @@
 import { useState } from 'react'
-import Samples from './components/Samples.jsx'
-import AddSample from './components/AddSample.jsx'
-import TestGroup from './components/TestGroup.jsx'
-import SelectBacterium from './components/SelectBaterium.jsx'
-import Name from './components/Name.jsx'
-import TextEditField from './components/TextEditField.jsx'
+import Samples from './components/Samples'
+import AddSample from './components/AddSample'
+import TestGroup from './components/TestGroup'
+import SelectBacterium from './components/SelectBacterium'
+import Name from './components/Name'
+import TextEditField from './components/TextEditField'
 import { useDispatch, useSelector } from 'react-redux'
-import { addCase } from '../../reducers/caseReducer.js'
-import { Modal, Button, Form, Accordion, Card, Image } from 'react-bootstrap'
-import Notification from '../utility/Notification.js'
+import { addCase } from '../../reducers/caseReducer'
+import { Modal, Button, Form, Accordion, Card, Image, AccordionButton } from 'react-bootstrap'
+import Notification from '../utility/Notification'
 import * as Yup from 'yup'
 import { Formik } from 'formik'
-import { updateCase } from '../../reducers/caseReducer.js'
-import ShowPreviewImage from '../test/components/ShowPreviewImage.js'
+import { updateCase } from '../../reducers/caseReducer'
+import ShowPreviewImage from '../test/components/ShowPreviewImage'
 import '../../style.css'
 
 const CaseForm = ({ caseToEdit }) => {
@@ -29,16 +29,15 @@ const CaseForm = ({ caseToEdit }) => {
 
     return testIds
   }
-
   /* initial parameters */
   const library = useSelector(state => state.language)?.library?.frontend.case.form
   const validation = useSelector(state => state.language)?.validation?.case
   const cases = useSelector(state => state.case)
-  const bacteria = useSelector(state => state.bacteria)?.sort((bacterium1, bacterium2) =>
+  const bacteria = useSelector(bacteriaState => bacteriaState.bacteria)?.sort((bacterium1, bacterium2) =>
     bacterium1.name.localeCompare(bacterium2.name)
   )
-  const user = useSelector(state => state.user)
-  const tests = useSelector(state => state.test)?.sort((test1, test2) => test1.name.localeCompare(test2.name))
+  const user = useSelector(userData => userData.user)
+  const tests = useSelector(testState => testState.test)?.sort((test1, test2) => test1.name.localeCompare(test2.name))
   /* initial parameters end*/
 
   /* parameters for style */
@@ -46,13 +45,13 @@ const CaseForm = ({ caseToEdit }) => {
   /* parameters for style end*/
 
   /* states */
-  const [name, setName] = useState(caseToEdit ? caseToEdit.name : '')
-  const [bacteriumId, setBacteriumId] = useState(caseToEdit ? caseToEdit.bacterium.id : '')
-  const [anamnesis, setAnamnesis] = useState(caseToEdit ? caseToEdit.anamnesis : '')
-  const [completionText, setCompletionText] = useState(caseToEdit ? caseToEdit.completionText : '')
+  const [name, setName] = useState(caseToEdit?.name || '')
+  const [bacteriumId, setBacteriumId] = useState(caseToEdit?.bacterium.id || '')
+  const [anamnesis, setAnamnesis] = useState(caseToEdit?.anamnesis || '')
+  const [completionText, setCompletionText] = useState(caseToEdit?.completionText || '')
   const INITIAL_STATE = {
     id: '',
-    image: undefined,
+    image: '',
   }
   const [completionImage, setCompletionImage] = useState(INITIAL_STATE)
   const [deleteEndImage, setDeleteEndImage] = useState(false)
@@ -180,8 +179,8 @@ const CaseForm = ({ caseToEdit }) => {
   const resetCaseForm = () => {
     setName(caseToEdit ? caseToEdit.name : '')
     setBacteriumId(caseToEdit ? caseToEdit.bacterium.id : '')
-    setAnamnesis(caseToEdit && caseToEdit.anamnesis ? caseToEdit.anamnesis : '')
-    setCompletionText(caseToEdit && caseToEdit.completionText ? caseToEdit.completionText : '')
+    setAnamnesis(caseToEdit?.anamnesis ? caseToEdit.anamnesis : '')
+    setCompletionText(caseToEdit?.completionText ? caseToEdit.completionText : '')
     setCompletionImage(INITIAL_STATE)
     setDeleteEndImage(false)
     setImg(caseToEdit && caseToEdit.completionImage ? true : false)
@@ -314,7 +313,7 @@ const CaseForm = ({ caseToEdit }) => {
   return (
     <div className="formtext">
       <Modal>
-        <Notification></Notification>
+        <Notification />
       </Modal>
       <Button
         id={caseToEdit ? 'caseEditButton' : 'caseModalButton'}
@@ -391,7 +390,7 @@ const CaseForm = ({ caseToEdit }) => {
                       {errors.completionText}
                     </Form.Control.Feedback>
                     <br></br>
-                  </Form.Group>
+                   </Form.Group>
                   <div style={{ marginBottom: '40px' }}>
                     {caseToEdit ? (
                       <Form.Group controlId="editCompletionImage">
@@ -400,7 +399,12 @@ const CaseForm = ({ caseToEdit }) => {
                         {imgPreview !== '' ? (
                           <>
                             <p
-                              style={{ marginLeft: '10px', marginTop: '20px', marginBottom: '10px', fontSize: '0.8em' }}
+                              style={{
+                                marginLeft: '10px',
+                                marginTop: '20px',
+                                marginBottom: '10px',
+                                fontSize: '0.8em',
+                              }}
                             >
                               {library.newImage}
                             </p>
@@ -419,16 +423,28 @@ const CaseForm = ({ caseToEdit }) => {
                         )}
                         <Form.Control
                           key={inputResetter}
-                          style={{ marginLeft: '10px', marginTop: '20px', marginBottom: '10px', marginRight: '15px' }}
+                          style={{
+                            marginLeft: '10px',
+                            marginTop: '20px',
+                            marginBottom: '10px',
+                            marginRight: '15px',
+                          }}
                           name="editCompletionImg"
-                          value={completionImage.image}
+                          value={completionImage.image || ''}
                           type="file"
                           accept=".png, .jpg, .jpeg"
                           onChange={handleImageAdd}
                         />
                         {img && caseToEdit.completionImage ? (
                           <>
-                            <p style={{ marginLeft: '10px', marginTop: '20px', marginBottom: '0', fontSize: '0.8em' }}>
+                            <p
+                              style={{
+                                marginLeft: '10px',
+                                marginTop: '20px',
+                                marginBottom: '0',
+                                fontSize: '0.8em',
+                              }}
+                            >
                               {library.oldImage}
                             </p>
                             <Image
@@ -474,7 +490,12 @@ const CaseForm = ({ caseToEdit }) => {
                         {imgPreview !== '' ? (
                           <>
                             <p
-                              style={{ marginLeft: '10px', marginTop: '20px', marginBottom: '10px', fontSize: '0.8em' }}
+                              style={{
+                                marginLeft: '10px',
+                                marginTop: '20px',
+                                marginBottom: '10px',
+                                fontSize: '0.8em',
+                              }}
                             >
                               {library.newImage}
                             </p>
@@ -504,7 +525,7 @@ const CaseForm = ({ caseToEdit }) => {
                   </div>
                   <Accordion activeKey={samplesAccordion}>
                     <Card>
-                      <Accordion.Toggle
+                      <AccordionButton
                         as={Card.Header}
                         onClick={() => setSamplesAccodrion(samplesAccordion === '-1' ? '0' : '-1')}
                       >
@@ -513,8 +534,8 @@ const CaseForm = ({ caseToEdit }) => {
                           {samplesAccordion === '-1' ? library.samples.toShow : library.samples.toHide}
                           {library.samples.titleEnd}
                         </Form.Label>
-                      </Accordion.Toggle>
-                      <Accordion.Collapse eventKey="0">
+                      </AccordionButton>
+                      <Accordion.Item eventKey="0">
                         <Card.Body>
                           <Samples samples={samples} deleteSample={deleteSample}></Samples>
                           <AddSample
@@ -528,12 +549,12 @@ const CaseForm = ({ caseToEdit }) => {
                             touched={touched.sample}
                           ></AddSample>
                         </Card.Body>
-                      </Accordion.Collapse>
+                      </Accordion.Item>
                     </Card>
                   </Accordion>
                   <Accordion activeKey={testGroupAccordion}>
                     <Card>
-                      <Accordion.Toggle
+                      <AccordionButton
                         as={Card.Header}
                         onClick={() => setTestGroupAccodrion(testGroupAccordion === '-1' ? '0' : '-1')}
                       >
@@ -542,7 +563,7 @@ const CaseForm = ({ caseToEdit }) => {
                           {testGroupAccordion === '-1' ? library.testGroups.toShow : library.testGroups.toHide}
                           {library.testGroups.titleEnd}
                         </Form.Label>
-                      </Accordion.Toggle>
+                      </AccordionButton>
                       <Accordion.Collapse eventKey="0">
                         <Card.Body>
                           <Form.Check

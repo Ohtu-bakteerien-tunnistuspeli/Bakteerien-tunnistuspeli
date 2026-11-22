@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { register } from '../../reducers/userReducer'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { Form, Button, Modal } from 'react-bootstrap'
 import { setNotification } from '../../reducers/notificationReducer'
 import PasswordQualityIndicator from './components/PasswordQualityIndicator'
@@ -12,12 +12,13 @@ import GDBRText from './GDPRText'
 import PrivacyText from './PrivacyText'
 import * as Yup from 'yup'
 import { Formik } from 'formik'
-
+import checkPassWord from 'zxcvbn'
+ 
 const Register = () => {
   const validation = useSelector(state => state.language)?.validation?.user
   const library = useSelector(state => state.language)?.library?.frontend.user.register
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
   const [accept, setAccept] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [showModal2, setShowModal2] = useState(false)
@@ -25,8 +26,8 @@ const Register = () => {
   const [password, setNewPassword] = useState('')
   const [email, setNewEmail] = useState('')
   const [studentNumber, setNewStudentNumber] = useState('')
-  const [classGroup, setNewClassgroup] = useState('')
-  const checkPassWord = require('zxcvbn') // eslint-disable-line
+  const [classGroup, setNewClassgroup] = useState('C-')
+ // eslint-disable-line
 
   const UserSchema = Yup.object().shape({
     username: Yup.string()
@@ -97,7 +98,7 @@ const Register = () => {
   const handleRegister = async values => {
     if (accept) {
       if (password === values.passwordAgain) {
-        dispatch(register(username, email, studentNumber, `C-${classGroup}`, password.trim(), history))
+        dispatch(register(username, email, studentNumber, `C-${classGroup}`, password.trim(), navigate))
       } else {
         dispatch(setNotification({ message: library.samePasswordAndSecondPassword, success: false }))
       }
@@ -165,6 +166,7 @@ const Register = () => {
                   touched={touched.classGroup}
                   setFieldTouched={setFieldTouched}
                   setClassgroup={setNewClassgroup}
+                  fieldId={'classGroup'}
                 />
                 <Password
                   typeControlId="password"

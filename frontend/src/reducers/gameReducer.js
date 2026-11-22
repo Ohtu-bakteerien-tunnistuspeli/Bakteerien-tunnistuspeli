@@ -2,7 +2,7 @@ import gameService from '../services/game'
 import { setNotification } from '../reducers/notificationReducer'
 import { getCredits } from './creditReducer'
 
-const reducer = (state = null, action) => {
+const gameReducer = (state = null, action) => {
   switch (action.type) {
     case 'GET_GAME': {
       return action.data
@@ -27,7 +27,7 @@ const reducer = (state = null, action) => {
   }
 }
 
-export const getGame = (history, id, token) => {
+export const getGame = (navigate, id, token) => {
   return async (dispatch, getState) => {
     const library = getState()?.language?.library.frontend.routes
     const receivedCase = await gameService.get(id, token)
@@ -52,7 +52,7 @@ export const getGame = (history, id, token) => {
         type: 'GET_GAME',
         data: game,
       })
-      history.push(`/${library.game}`)
+      navigate(`/${library.game}`)
     }
   }
 }
@@ -126,7 +126,11 @@ export const checkBacterium = (game, bacteriumName, token) => {
         dispatch(setNotification({ message: library.bacteriumCorrect, success: true, show: true }))
         dispatch({
           type: 'CHECK_BACTERIUM',
-          data: { ...game, bacteriumCorrect: true, completionImageUrl: checkBacterium.completionImageUrl },
+          data: {
+            ...game,
+            bacteriumCorrect: true,
+            completionImageUrl: checkBacterium.completionImageUrl,
+          },
         })
         dispatch(getCredits(token))
       } else {
@@ -154,4 +158,4 @@ export const recoverGame = game => {
   }
 }
 
-export default reducer
+export default gameReducer

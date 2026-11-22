@@ -1,17 +1,17 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { getGame } from '../reducers/gameReducer'
 import { Button, Table } from 'react-bootstrap'
 
 const FrontPage = () => {
   const library = useSelector(state => state.language)?.library?.frontend.frontPage
-  const user = useSelector(state => state.user)
+  const user = useSelector(userData => userData.user)
   const cases = useSelector(state => state.case)?.sort((case1, case2) => case1.name.localeCompare(case2.name))
   const credits = useSelector(state => state.credit)
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
   const startGame = caseId => {
-    dispatch(getGame(history, caseId, user.token))
+    dispatch(getGame(navigate, caseId, user.token))
   }
 
   return (

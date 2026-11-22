@@ -8,8 +8,8 @@ import { useFormik } from 'formik'
 const HintForm = ({ caseToUpdate }) => {
   const library = useSelector(state => state.language)?.library?.frontend.case.hintForm
   const validation = useSelector(state => state.language)?.validation?.case.hints.hint
-  const user = useSelector(state => state.user)
-  const tests = useSelector(state => state.test)?.sort((test1, test2) => test1.name.localeCompare(test2.name))
+  const user = useSelector(userData => userData.user)
+  const tests = useSelector(testState => testState.test)?.sort((test1, test2) => test1.name.localeCompare(test2.name))
   const [hints, setHints] = useState(caseToUpdate.hints)
   const [currentTest, setCurrentTest] = useState(null)
   const dispatch = useDispatch()
@@ -27,6 +27,7 @@ const HintForm = ({ caseToUpdate }) => {
       )
     )
   }
+
   const handleHintChange = event => {
     formik.handleChange(event)
     if (hints.filter(hint => hint.test.name === currentTest.name).length > 0) {

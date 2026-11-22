@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import IdleTimer from 'react-idle-timer'
-import { Switch, Route, Redirect, useHistory, Link } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate, Link } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
 import { returnUser, logout } from './reducers/userReducer'
 import Login from './components/user/Login'
@@ -21,22 +21,23 @@ import { getLanguage } from './reducers/languageReducer'
 import useDetectMobile from './components/utility/useDetectMobile'
 
 const App = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
-  const user = useSelector(state => state.user)
+  const user = useSelector(userData => userData.user)
   const game = useSelector(state => state.game)
   const language = useSelector(state => state.language)
+
   useEffect(() => {
-    dispatch(returnUser(history))
+    dispatch(returnUser(navigate))
     dispatch(getLanguage())
-  }, [dispatch, history])
+  }, [dispatch])
   useEffect(() => {
     if (language && language.library) {
       document.title = language.library.frontend.title
     }
   }, [language])
   const logoutButton = async () => {
-    dispatch(logout(history))
+    dispatch(logout(navigate))
   }
 
   const handleOnBeforeUnload = () => {
@@ -61,7 +62,7 @@ const App = () => {
         <IdleTimer
           timeout={7200000}
           onIdle={() => {
-            dispatch(logout(history))
+            dispatch(logout(navigate))
             alert(library.app.inactivityMessage)
           }}
         />
@@ -148,39 +149,25 @@ const App = () => {
           <Notification></Notification>
           {user ? (
             <>
-              <Switch>
-                <Route path={`/${library.routes.bacteriaList}`}>
-                  {user.admin ? <BacteriaList /> : <Redirect to="/" />}
-                </Route>
-                <Route path={`/${library.routes.caseList}`}>{user.admin ? <CaseList /> : <Redirect to="/" />}</Route>
-                <Route path={`/${library.routes.testList}`}>{user.admin ? <TestList /> : <Redirect to="/" />}</Route>
-                <Route path={`/${library.routes.creditList}`}>
-                  {user.admin ? <CreditList /> : <Redirect to="/" />}
-                </Route>
-                <Route path={`/${library.routes.userList}`}>{user.admin ? <UserList /> : <Redirect to="/" />}</Route>
-                <Route path={`/${library.routes.game}`}>{game ? <GamePage /> : <Redirect to="/" />}</Route>
-                <Route path={`/${library.routes.profile}`}>{user ? <ProfilePage /> : <Redirect to="/" />}</Route>
-                <Route path="/">
-                  <FrontPage />
-                </Route>
-              </Switch>
+              <Routes>
+                <Route element={<FrontPage />} exact path="/" />
+                <Route element={user.admin ? <BacteriaList /> : <Navigate to="/" />} exact path={`/${library.routes.bacteriaList}`} />
+                <Route element={user.admin ? <CaseList /> : <Navigate to="/" />} exact path={`/${library.routes.caseList}`} />
+                <Route element={user.admin ? <TestList /> : <Navigate to="/" />} exact path={`/${library.routes.testList}`} />
+                <Route element={user.admin ? <CreditList /> : <Navigate to="/" />} exact path={`/${library.routes.creditList}`} />
+                <Route element={user.admin ? <UserList /> : <Navigate to="/" />} exact path={`/${library.routes.userList}`} />
+                <Route element={game ? <GamePage /> : <Navigate to="/" />} exact path={`/${library.routes.game}`} />
+                <Route element={user ? <ProfilePage /> : <Navigate to="/" />} exact path={`/${library.routes.profile}`} />
+              </Routes>
             </>
           ) : (
             <>
-              <Switch>
-                <Route path={`/${library.routes.login}`}>
-                  <Login />
-                </Route>
-                <Route path={`/${library.routes.register}`}>
-                  <Register />
-                </Route>
-                <Route path={`/${library.routes.temporaryPassword}`}>
-                  <TemporaryPassword />
-                </Route>
-                <Route path="/">
-                  <Redirect to={`/${library.routes.login}`} />
-                </Route>
-              </Switch>
+              <Routes>
+                <Route element={<Login />} exact path={`/${library.routes.login}`} />
+                <Route element={<Register />} exact path={`/${library.routes.register}`} />
+                <Route element={<TemporaryPassword />} exact path={`/${library.routes.temporaryPassword}`} />
+                <Route element={<Navigate to={`/${library.routes.login}`} />} exact path="/" />
+              </Routes>
             </>
           )}
         </div>

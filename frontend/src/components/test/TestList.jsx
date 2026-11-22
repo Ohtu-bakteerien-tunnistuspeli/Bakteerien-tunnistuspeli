@@ -6,8 +6,8 @@ import { Table } from 'react-bootstrap'
 
 const TestList = () => {
   const library = useSelector(state => state.language)?.library?.frontend.test.list
-  const tests = useSelector(state => state.test)?.sort((test1, test2) => test1.name.localeCompare(test2.name))
-  const user = useSelector(state => state.user)
+  const tests = useSelector(testState => testState.test)?.sort((test1, test2) => test1.name.localeCompare(test2.name))
+  const user = useSelector(userData => userData.user)
   const [testsToShow, setTestsToShow] = useState(tests)
   const [filterByTestName, setFilterByTestName] = useState('')
   const [filterByTestType, setFilterByTestType] = useState('')

@@ -16,7 +16,7 @@ const CreditList = () => {
   const [orderByStudentNumber, setOrderByStudentNumber] = useState('')
   const [orderByClassGroup, setOrderByClassGroup] = useState('')
   const [orderByUsername, setOrderByUsername] = useState('')
-  const user = useSelector(state => state.user)
+  const user = useSelector(userData => userData.user)
   const dispatch = useDispatch()
   const [timer, setTimer] = useState(null)
 

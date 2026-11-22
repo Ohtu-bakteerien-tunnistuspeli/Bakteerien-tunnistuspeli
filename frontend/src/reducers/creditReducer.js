@@ -1,7 +1,7 @@
 import creditService from '../services/credit'
 import { setNotification } from './notificationReducer'
 
-const reducer = (state = [], action) => {
+const creditReducer = (state = [], action) => {
   switch (action.type) {
     case 'GET_CREDITS': {
       return action.data
@@ -54,4 +54,4 @@ export const zeroCredit = () => {
   }
 }
 
-export default reducer
+export default creditReducer

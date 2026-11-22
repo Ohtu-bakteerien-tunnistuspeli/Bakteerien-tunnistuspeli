@@ -6,7 +6,7 @@ import { Button, Form } from 'react-bootstrap'
 const BacteriumForm = () => {
   const library = useSelector(state => state.language)?.library?.frontend.bacteria.form
   const [newBacterium, setNewBacterium] = useState('')
-  const user = useSelector(state => state.user)
+  const user = useSelector(userData => userData.user)
   const dispatch = useDispatch()
   const style = { margin: '10px' }
   const addBacterium = event => {

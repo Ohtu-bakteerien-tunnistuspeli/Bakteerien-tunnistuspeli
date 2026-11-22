@@ -1,5 +1,5 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux'
-import thunk from 'redux-thunk'
+import { thunk } from 'redux-thunk'
 import userReducer from './reducers/userReducer'
 import bacteriaReducer from './reducers/bacteriaReducer'
 import testReducer from './reducers/testReducer'

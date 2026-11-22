@@ -1,18 +1,18 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { addTest } from '../../reducers/testReducer.js'
+import { addTest } from '../../reducers/testReducer'
 import { Modal, Button, Form, Image } from 'react-bootstrap'
-import BacteriaSpecificImages from './BacteriaSpecificImages.jsx'
-import Name from './components/Name.jsx'
-import Type from './components/Type.jsx'
-import DeleteButton from '../utility/DeleteButton.jsx'
-import AddImage from './components/AddImage.jsx'
-import { INITIAL_STATE, marginStyle } from './utility.js'
-import { deleteTest, updateTest } from '../../reducers/testReducer.js'
+import BacteriaSpecificImages from './BacteriaSpecificImages'
+import Name from './components/Name'
+import Type from './components/Type'
+import DeleteButton from '../utility/DeleteButton'
+import AddImage from './components/AddImage'
+import { INITIAL_STATE, marginStyle } from './utility'
+import { deleteTest, updateTest } from '../../reducers/testReducer'
 import * as Yup from 'yup'
 import { Formik } from 'formik'
-import Notification from '../utility/Notification.js'
-import { setNotification } from '../../reducers/notificationReducer.js'
+import Notification from '../utility/Notification'
+import { setNotification } from '../../reducers/notificationReducer'
 import '../../style.css'
 
 const TestForm = ({ testToEdit }) => {
@@ -23,11 +23,11 @@ const TestForm = ({ testToEdit }) => {
   /* initial parameters */
   const library = useSelector(state => state.language)?.library?.frontend.test.form
   const validation = useSelector(state => state.language)?.validation?.testCase
-  const tests = useSelector(state => state.test)
-  const bacteria = useSelector(state => state.bacteria)?.sort((bacterium1, bacterium2) =>
+  const tests = useSelector(testState => testState.test)
+  const bacteria = useSelector(bacteriaState => bacteriaState.bacteria)?.sort((bacterium1, bacterium2) =>
     bacterium1.name.localeCompare(bacterium2.name)
   )
-  const user = useSelector(state => state.user)
+  const user = useSelector(userData => userData.user)
   const dispatch = useDispatch()
   /* initial parameters end */
 

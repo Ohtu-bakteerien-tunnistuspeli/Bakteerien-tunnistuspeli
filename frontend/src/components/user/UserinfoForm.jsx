@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Modal, Button, Form } from 'react-bootstrap'
-import Notification from '../utility/Notification.js'
+import Notification from '../utility/Notification'
 import { updateUserinfo } from '../../reducers/usersReducer'
 import * as Yup from 'yup'
 import { Formik } from 'formik'
@@ -10,6 +10,7 @@ import Password from './components/Password'
 import PasswordQualityIndicator from './components/PasswordQualityIndicator'
 import Classgroup from './components/Classgroup'
 import { setNotification } from '../../reducers/notificationReducer'
+import checkPassWord from 'zxcvbn'
 
 const UserInfoForm = ({ user }) => {
   /* states */
@@ -70,7 +71,6 @@ const UserInfoForm = ({ user }) => {
     setConfirmText('')
   }
 
-  const checkPassWord = require('zxcvbn') // eslint-disable-line
   /* schema for validation */
   const UserinfoSchema = Yup.object().shape({
     username: Yup.string()

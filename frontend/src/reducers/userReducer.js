@@ -7,7 +7,7 @@ import { getCredits, zeroCredit } from './creditReducer'
 import { recoverGame } from './gameReducer'
 import { getUsers, zeroUsers } from './usersReducer'
 
-const reducer = (state = null, action) => {
+const userReducer = (userData = null, action) => {
   switch (action.type) {
     case 'LOGIN': {
       return action.data
@@ -25,11 +25,11 @@ const reducer = (state = null, action) => {
       return action.data
     }
     default:
-      return state
+      return userData
   }
 }
 
-export const login = (username, password, history) => {
+export const login = (username, password, navigate) => {
   return async (dispatch, getState) => {
     const library = getState()?.language?.library.frontend.user.reducer
     const routeLibrary = getState()?.language?.library.frontend.routes
@@ -44,10 +44,10 @@ export const login = (username, password, history) => {
       if (user.admin) {
         dispatch(getUsers(user.token))
       }
-      dispatch(getCredits(user.token))
-      dispatch(getBacteria(user.token))
-      dispatch(getTests(user.token))
-      dispatch(getCases(user.token))
+      await dispatch(getCredits(user.token))
+      await dispatch(getBacteria(user.token))
+      await dispatch(getTests(user.token))
+      await dispatch(getCases(user.token))
       if (user.temporaryPasswordUsed) {
         dispatch(
           setNotification({
@@ -56,7 +56,7 @@ export const login = (username, password, history) => {
             show: true,
           })
         )
-        history.push(`/${routeLibrary.profile}`)
+        navigate(`/${routeLibrary.profile}`)
       } else {
         dispatch(
           setNotification({
@@ -65,7 +65,7 @@ export const login = (username, password, history) => {
             show: true,
           })
         )
-        history.push('/')
+        navigate('/')
       }
     } else {
       dispatch({
@@ -77,14 +77,14 @@ export const login = (username, password, history) => {
   }
 }
 
-export const logout = history => {
+export const logout = navigate => {
   return async dispatch => {
     window.localStorage.removeItem('loggedUser')
     dispatch({
       type: 'LOGOUT',
       data: null,
     })
-    history.push('/')
+    navigate('/')
     dispatch(zeroUsers())
     dispatch(zeroBacteria())
     dispatch(zeroCase())
@@ -93,11 +93,11 @@ export const logout = history => {
   }
 }
 
-export const returnUser = history => {
+export const returnUser = navigate => {
   return async dispatch => {
     const userText = window.localStorage.getItem('loggedUser')
     if (window.localStorage.getItem('lastPage')) {
-      history.push(window.localStorage.getItem('lastPage'))
+      navigate(window.localStorage.getItem('lastPage'))
     }
     if (window.localStorage.getItem('gameState')) {
       dispatch(recoverGame(JSON.parse(window.localStorage.getItem('gameState'))))
@@ -120,11 +120,17 @@ export const returnUser = history => {
   }
 }
 
-export const register = (username, email, studentNumber, classGroup, password, history) => {
+export const register = (username, email, studentNumber, classGroup, password, navigate) => {
   return async (dispatch, getState) => {
     const library = getState()?.language?.library.frontend.user.reducer
     const routeLibrary = getState()?.language?.library.frontend.routes
-    let response = await userService.register({ username, email, studentNumber, classGroup, password })
+    let response = await userService.register({
+      username,
+      email,
+      studentNumber,
+      classGroup,
+      password,
+    })
     if (response && !response.error) {
       dispatch(
         setNotification({
@@ -133,7 +139,7 @@ export const register = (username, email, studentNumber, classGroup, password, h
           show: true,
         })
       )
-      history.push(`/${routeLibrary.login}`)
+      navigate(`/${routeLibrary.login}`)
     } else {
       dispatch({
         type: 'REGISTER',
@@ -154,14 +160,14 @@ export const register = (username, email, studentNumber, classGroup, password, h
   }
 }
 
-export const generateTemporaryPassword = (username, email, history) => {
+export const generateTemporaryPassword = (username, email, navigate) => {
   return async dispatch => {
     let response = await userService.temporaryPasswordGenerate({ username, email })
     if (response.error) {
       dispatch(setNotification({ message: response.error, success: false, show: true }))
     } else {
       dispatch(setNotification({ message: response.message, success: true, show: true }))
-      history.push('/')
+      navigate('/')
     }
   }
 }
@@ -176,4 +182,4 @@ export const setUser = user => {
   }
 }
 
-export default reducer
+export default userReducer

@@ -8,10 +8,10 @@ import Notification from '../utility/Notification'
 
 const BacteriaList = () => {
   const library = useSelector(state => state.language)?.library?.frontend.bacteria.list
-  const bacteria = useSelector(state => state.bacteria)?.sort((bacterium1, bacterium2) =>
+  const bacteria = useSelector(bacteriaState => bacteriaState.bacteria)?.sort((bacterium1, bacterium2) =>
     bacterium1.name.localeCompare(bacterium2.name)
   )
-  const user = useSelector(state => state.user)
+  const user = useSelector(userData => userData.user)
   const [bacteriaToShow, setBacteriaToShow] = useState(bacteria)
   const [filterByBacteriaName, setFilterByName] = useState('')
   const dispatch = useDispatch()

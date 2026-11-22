@@ -1,18 +1,19 @@
 import bacteriaService from '../services/bacteria'
 import { setNotification } from '../reducers/notificationReducer'
-const reducer = (state = [], action) => {
+
+const bacteriaReducer = (bacteriaState = [], action) => {
   switch (action.type) {
     case 'GET_BACTERIA': {
       return action.data
     }
     case 'ADD_BACTERIUM': {
-      return [...state, action.data]
+      return [...bacteriaState, action.data]
     }
     case 'DELETE_BACTERIUM': {
-      return state.filter(bacterium => bacterium.id !== action.data.id)
+      return bacteriaState.filter(bacterium => bacterium.id !== action.data.id)
     }
     case 'UPDATE_BACTERIUM': {
-      return state.map(bacterium =>
+      return bacteriaState.map(bacterium =>
         bacterium.id === action.data.id ? { ...bacterium, name: action.data.name } : bacterium
       )
     }
@@ -20,7 +21,7 @@ const reducer = (state = [], action) => {
       return action.data
     }
     default:
-      return state
+      return bacteriaState
   }
 }
 
@@ -109,4 +110,4 @@ export const zeroBacteria = () => {
   }
 }
 
-export default reducer
+export default bacteriaReducer

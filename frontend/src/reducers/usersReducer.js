@@ -4,7 +4,7 @@ import { setUser } from './userReducer'
 import { getCredits } from './creditReducer'
 import { logout } from '../reducers/userReducer'
 
-const reducer = (state = [], action) => {
+const usersReducer = (state = [], action) => {
   switch (action.type) {
     case 'GET_USERS': {
       return action.data
@@ -166,4 +166,4 @@ export const updateUserinfo = (
   }
 }
 
-export default reducer
+export default usersReducer

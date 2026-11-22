@@ -1,16 +1,16 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { generateTemporaryPassword } from '../../reducers/userReducer'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { Form, Button } from 'react-bootstrap'
 const TemporaryPassword = () => {
   const library = useSelector(state => state.language)?.library?.frontend.user.temporaryPassword
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
   const handleSingleUsePassword = async event => {
     event.preventDefault()
     const username = event.target.username.value
     const email = event.target.email.value
-    dispatch(generateTemporaryPassword(username, email, history))
+    dispatch(generateTemporaryPassword(username, email, navigate))
   }
   return (
     <div>

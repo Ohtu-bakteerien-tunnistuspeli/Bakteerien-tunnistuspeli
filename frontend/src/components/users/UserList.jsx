@@ -7,7 +7,7 @@ import { deleteUser, promoteUser, demoteUser } from '../../reducers/usersReducer
 const UserList = () => {
   const library = useSelector(state => state.language)?.library?.frontend.users.list
   const users = useSelector(state => state.users)?.sort((user1, user2) => user1.username.localeCompare(user2.username))
-  const user = useSelector(state => state.user)
+  const user = useSelector(userData => userData.user)
   const [usersToShow, setUsersToShow] = useState(users)
   const [filterByStudentNumber, setFilterByStudentNumber] = useState('')
   const [filterByUsername, setFilterByUsername] = useState('')

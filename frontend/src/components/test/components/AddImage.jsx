@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Form, Button } from 'react-bootstrap'
-import { INITIAL_STATE } from '../utility.js'
-import ShowPreviewImage from './ShowPreviewImage.js'
+import { INITIAL_STATE } from '../utility'
+import ShowPreviewImage from './ShowPreviewImage'
 
 const AddImage = ({ title, name, value, setImage, imgPreview, setImgPreview, handleCancel, library }) => {
   const [inputResetter, newInput] = useState(0)
@@ -29,7 +29,14 @@ const AddImage = ({ title, name, value, setImage, imgPreview, setImgPreview, han
       <Form.Label>{title}</Form.Label>
       {imgPreview !== '' ? (
         <>
-          <p style={{ marginLeft: '10px', marginTop: '20px', marginBottom: '10px', fontSize: '0.8em' }}>
+          <p
+            style={{
+              marginLeft: '10px',
+              marginTop: '20px',
+              marginBottom: '10px',
+              fontSize: '0.8em',
+            }}
+          >
             {library.newImage}
           </p>
           <ShowPreviewImage imgPreview={imgPreview}></ShowPreviewImage>

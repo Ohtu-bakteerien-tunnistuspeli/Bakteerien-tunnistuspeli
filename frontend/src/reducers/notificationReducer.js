@@ -1,4 +1,4 @@
-const reducer = (state = '', action) => {
+const notificationReducer = (state = '', action) => {
   switch (action.type) {
     case 'SET NOTIFICATION': {
       return action.notification
@@ -18,11 +18,11 @@ export const setNotification = notification => {
         dispatch(setNotification(''))
       }, 5000)
     }
-    dispatch({
+    await dispatch({
       type: 'SET NOTIFICATION',
       notification: notification,
     })
   }
 }
 
-export default reducer
+export default notificationReducer

@@ -12,11 +12,11 @@ const GamePage = () => {
   const [testTab, setTestTab] = useState('näytteitä')
   const dispatch = useDispatch()
   const game = useSelector(state => state.game)
-  const user = useSelector(state => state.user)
-  const bacteria = useSelector(state => state.bacteria)?.map(bact => bact.name)
+  const user = useSelector(userData => userData.user)
+  const bacteria = useSelector(bacteriaState => bacteriaState.bacteria)?.map(bact => bact.name)
   const [bacterium, setBacterium] = useState('')
   const [selectedSample, setSelectedSample] = useState('')
-  const tests = useSelector(state => state.test)?.sort((test1, test2) => test1.name.localeCompare(test2.name))
+  const tests = useSelector(testState => testState.test)?.sort((test1, test2) => test1.name.localeCompare(test2.name))
   const testsToShow = tests
     .filter(test => test.type === 'Testi')
     .sort((test1, test2) => test1.name.localeCompare(test2.name))
@@ -58,7 +58,7 @@ const GamePage = () => {
     <>
       <Tabs activeKey={tab} onSelect={k => setTab(k)}>
         <Tab eventKey="anamneesi" title={library.tabs.anamnesis}>
-          <p style={{ padding: '20px' }}>
+          <div style={{ padding: '20px' }}>
             <FormattedText
               value={
                 game.case.anamnesis && game.case.anamnesis !== 'undefined' && game.case.anamnesis !== '<p>undefined</p>'
@@ -66,7 +66,7 @@ const GamePage = () => {
                   : ''
               }
             />
-          </p>
+          </div>
         </Tab>
         <Tab eventKey="toiminnot" title={library.tabs.functions}>
           <Tabs activeKey={testTab} onSelect={k => setTestTab(k)}>
