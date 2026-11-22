@@ -2,22 +2,23 @@ import Validation from '../lib/validation.json'
 import Library from '../lib/library.json'
 
 const reducer = (state = null, action) => {
-    switch (action.type) {
+  switch (action.type) {
     case 'GET_LANGUAGE': {
-        return action.data
+      return action.data
     }
-    default: return state
-    }
+    default:
+      return state
+  }
 }
 
 export const getLanguage = () => {
-    return async dispatch => {
-        const language = { validation: Validation, library: Library }
-        dispatch({
-            type: 'GET_LANGUAGE',
-            data: language
-        })
-    }
+  return async dispatch => {
+    const language = { validation: Validation, library: Library }
+    dispatch({
+      type: 'GET_LANGUAGE',
+      data: language,
+    })
+  }
 }
 
 export default reducer
