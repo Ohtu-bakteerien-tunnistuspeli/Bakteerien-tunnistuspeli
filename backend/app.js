@@ -4,7 +4,7 @@ const app = express()
 const { library, MONGODB_URI, IMAGEURL } = require('./utils/config')
 const { logger } = require('./utils/logger')
 const libraryRoutes = library.frontend.routes
-//const { seed } = require('./mongo/seed_db')
+// const { seed } = require('./mongo/seed_db')
 require('express-async-errors')
 const mongoose = require('mongoose')
 if (
@@ -19,7 +19,7 @@ if (
 if (process.env.NODE_ENV === 'production') {
   mongoose.set('strictQuery', false)
   mongoose.connect(MONGODB_URI)
-} else if (process.env.NODE_ENV === 'development') {
+} else if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
   mongoose.set('strictQuery', false)
   mongoose.connect(MONGODB_URI)
   mongoose.connection.on('error', error => {

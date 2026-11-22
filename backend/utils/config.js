@@ -14,7 +14,7 @@ const EMAILPROXY = process.env.EMAILPROXY
 let MONGODB_URI
 if (process.env.NODE_ENV === 'production') {
   MONGODB_URI = process.env.MONGODB_URI
-} else if (process.env.NODE_ENV === 'development') {
+} else if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
   MONGODB_URI = process.env.MONGODB_URI_DEV
 }
 
