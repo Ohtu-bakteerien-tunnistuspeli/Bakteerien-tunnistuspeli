@@ -42,7 +42,7 @@ describe('Profile management', () => {
       it('Can quit deleting itself', () => {
         cy.get('#deleteUser').click()
         cy.get('#confirmField').type('useruser10')
-        cy.get('.close').click()
+        cy.get('.btn-close').click()
         cy.contains('Oma profiilini')
       })
 
@@ -113,7 +113,7 @@ describe('Profile management', () => {
         cy.get('#classGroup').clear().type('70')
         cy.get('#confirmField').type('useruser12')
         cy.get('#updateUserInfo').click()
-        cy.get('.close').click()
+        cy.get('.btn-close').click()
         cy.contains('C-12')
       })
 
@@ -125,7 +125,7 @@ describe('Profile management', () => {
         cy.get('#classGroup').clear().type('70')
         cy.get('#confirmField').type('useruser12')
         cy.get('#updateUserInfo').click()
-        cy.get('.close').click()
+        cy.get('.btn-close').click()
         cy.contains('user')
         cy.contains('user@example.com')
         cy.contains('1234567')
@@ -138,7 +138,7 @@ describe('Profile management', () => {
         cy.get('#passwordAgain').type('useruser456')
         cy.get('#confirmField').type('useruser10')
         cy.get('#updateUserInfo').click()
-        cy.get('.close').click({ multiple: true })
+        cy.get('.btn-close').click({ multiple: true })
         cy.wait(500)
         cy.contains('Kirjaudu ulos').click()
         cy.get('#username').type('user')
@@ -181,7 +181,7 @@ describe('Profile management', () => {
       it('Can quit deleting itself', () => {
         cy.get('#deleteUser').click()
         cy.get('#confirmField').type('adminadmin')
-        cy.get('.close').click()
+        cy.get('.btn-close').click()
         cy.contains('Oma profiilini')
       })
 

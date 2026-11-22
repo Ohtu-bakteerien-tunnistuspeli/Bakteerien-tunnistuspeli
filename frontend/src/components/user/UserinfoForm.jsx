@@ -21,7 +21,7 @@ const UserInfoForm = ({ user }) => {
   const [passwordAgain, setNewPasswordAgain] = useState('')
   const [email, setNewEmail] = useState(user.email)
   const [studentNumber, setNewStudentNumber] = useState(user.studentNumber)
-  const [classGroup, setNewClassgroup] = useState(user.classGroup.substring(2))
+  const [classGroup, setNewClassgroup] = useState(user.classGroup)
   const [confirmText, setConfirmText] = useState('')
 
   /* states end */
@@ -65,7 +65,7 @@ const UserInfoForm = ({ user }) => {
     setNewUsername(user.username)
     setNewEmail(user.email)
     setNewStudentNumber(user.studentNumber)
-    setNewClassgroup(user.classGroup.substring(2))
+    setNewClassgroup(user.classGroup)
     setNewPassword('')
     setNewPasswordAgain('')
     setConfirmText('')
@@ -143,7 +143,7 @@ const UserInfoForm = ({ user }) => {
       <Button id={'infoEditButton'} variant="primary" onClick={() => handleShow()}>
         {library.editInformation}
       </Button>
-      <Modal show={show} size="xl" scrollable="true" onHide={handleClose} backdrop="static">
+      <Modal cy='close' show={show} size="xl" scrollable="true" onHide={handleClose} backdrop="static">
         <Modal.Header closeButton>{library.editInformation}</Modal.Header>
         <Modal.Body>
           <Formik
@@ -228,6 +228,7 @@ const UserInfoForm = ({ user }) => {
                       touched={touched.classGroup}
                       setFieldTouched={setFieldTouched}
                       setClassgroup={setNewClassgroup}
+                      fieldId="classGroup"
                     />
                     <div>
                       <br />
